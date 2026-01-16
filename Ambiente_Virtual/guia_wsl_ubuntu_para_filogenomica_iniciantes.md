@@ -179,3 +179,5 @@ explorer.exe .
 
 Documento preparado para uso didático e institucional.
 
+Tiago Belintani 2026 Brave the Sun
+
