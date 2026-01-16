@@ -65,7 +65,7 @@ Se aparecer **Windows 10 (2004+)** ou **Windows 11**, continue.
 
 ## 4. Instalar o WSL
 
-📘 Documentação oficial da Microsoft:  
+Documentação oficial da Microsoft:  
 https://learn.microsoft.com/pt-br/windows/wsl/install
 
 No PowerShell, execute:
@@ -83,7 +83,7 @@ Subsistema do Windows para Linux já está instalado.
 ```
 
 Isso **não é um erro**.  
-👉 Reinicie o computador antes de continuar.
+Reinicie o computador antes de continuar.
 
 ---
 
@@ -119,7 +119,7 @@ Na primeira execução:
 - Crie um **nome de usuário Linux**  
 - Crie uma **senha**  
 
-⚠️ Ao digitar a senha, **nada aparece na tela**. Isso é normal.
+Ao digitar a senha, **nada aparece na tela**. Isso é normal.
 
 ---
 
@@ -182,4 +182,4 @@ wsl --shutdown
 
 Documento preparado para uso didático.
 
-**Tiago Belintani — 2026**
+**Tiago Belintani — 2026 - Brave the Sun** 
