@@ -113,8 +113,8 @@ Seleciona um número absoluto de reads, independente do tamanho original.
 ### Exemplo: 100.000 reads
 
 ```bash
-seqtk sample -s100 SRR12345678_1.fastq 100000 > SRR12345678_1.100k.fastq
-seqtk sample -s100 SRR12345678_2.fastq 100000 > SRR12345678_2.100k.fastq
+seqtk sample -s100 SRR12345678_1.fastq 10000 > SRR12345678_1.100k.fastq
+seqtk sample -s100 SRR12345678_2.fastq 10000 > SRR12345678_2.100k.fastq
 ```
 
 ---
