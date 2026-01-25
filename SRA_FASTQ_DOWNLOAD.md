@@ -179,6 +179,13 @@ done < sra_accessions.txt
 
 ```
 
+Os dados estao prontos nesta pasta compartilhada:
+
+```bash
+https://mega.nz/file/oRBGFBrQ#AuWgPbEPMY_8llbiBYBIPgX26x9G7JwPM245bzElCR8
+
+```
+
 ---
 
 ## Parâmetros importantes
