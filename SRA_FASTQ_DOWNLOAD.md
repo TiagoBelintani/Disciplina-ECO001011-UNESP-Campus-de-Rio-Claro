@@ -135,9 +135,46 @@ fasterq-dump SRR12345678 --split-files --threads 4 --outdir fastq
 ## Download de múltiplos SRRs
 
 ```bash
+nano sra_accessions.txt
+```
+
+```
+SRR32233422
+SRR32233423
+SRR32233424
+SRR32392845
+SRR32392846
+SRR32392847
+SRR32392848
+SRR32392849
+SRR32392850
+SRR32392851
+SRR32392852
+SRR32392853
+SRR32392854
+SRR32392855
+SRR32392856
+SRR32392857
+SRR32392858
+SRR32392859
+SRR32392860
+SRR32392861
+SRR32392862
+SRR32392863
+SRR32392864
+```
+
+```bash
 while read SRR; do
-  fasterq-dump "$SRR" --split-files --threads 4 --outdir fastq 2>> logs/fasterq.log
+  fasterq-dump "$SRR" \
+    --split-files \
+    --threads 4 \
+    --outdir fastq \
+    2>> logs/fasterq.log
+
+  gzip fastq/${SRR}_1.fastq fastq/${SRR}_2.fastq
 done < sra_accessions.txt
+
 ```
 
 ---
