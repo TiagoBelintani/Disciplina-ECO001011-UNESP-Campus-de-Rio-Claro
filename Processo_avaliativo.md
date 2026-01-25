@@ -69,7 +69,7 @@ A apresentação deve seguir, **obrigatoriamente**, a estrutura abaixo.
 - Questão filogenética central
 - Escala evolutiva (intraespecífica, intergenérica, profunda)
 
-⚠️ Esta seção deve ser **concisa**.
+Esta seção deve ser **concisa**.
 
 ---
 
