@@ -137,7 +137,7 @@ fasterq-dump SRR12345678 --split-files --threads 4 --outdir fastq
 ```bash
 nano sra_accessions.txt
 ```
-Esses dados podem serem vizualidados aqui: 
+Os dados podem serem vizualidados aqui: 
 - https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP561602&o=acc_s%3Aa 
 
 ```bash
@@ -179,7 +179,7 @@ done < sra_accessions.txt
 
 ```
 
-Os dados estao prontos nesta pasta compartilhada:
+Os dados pré-processados e  prontos estão disponíveis nesta pasta compartilhada:
 
 ```bash
 https://mega.nz/file/oRBGFBrQ#AuWgPbEPMY_8llbiBYBIPgX26x9G7JwPM245bzElCR8
