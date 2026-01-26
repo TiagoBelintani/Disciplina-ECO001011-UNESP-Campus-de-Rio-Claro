@@ -188,3 +188,225 @@ Ao final da atividade, espera-se que o aluno seja capaz de:
 - Reconhecer limitações técnicas em estudos publicados
 
 ---
+
+# English Version
+
+Evaluation Process — Phylogenomics Seminar
+
+This document describes the seminar-based evaluation process of the course, with a focus on the critical analysis of modern phylogenomic studies, emphasizing primarily the technical and methodological aspects of the presented works.
+
+Objective of the activity
+
+The seminar aims to:
+
+Develop the ability to critically read phylogenomic articles
+
+Familiarize students with different types of genomic data
+
+Understand methodological decisions in modern phylogenomics
+
+Evaluate the advantages, limitations, and assumptions of each approach
+
+Stimulate oral scientific communication at the graduate level
+
+General structure of the activity
+
+Each student must:
+
+Choose one scientific article in phylogenomics
+
+The article must explicitly use at least one type of genomic data
+
+Prepare and deliver an individual seminar
+
+Presentation length: 25 to 30 minutes
+
+Main emphasis: technical aspects of the study
+
+Accepted data types
+
+The selected article must use one or more of the following data types:
+
+UCE (Ultraconserved Elements)
+
+AHE (Anchored Hybrid Enrichment)
+
+Transcriptome
+
+Exons
+
+Whole genomes
+
+SNPs
+
+RADseq / ddRAD
+
+mtDNA
+
+Integrated datasets (e.g., UCE + SNP, nuclear + mitochondrial, genome + morphology)
+
+Criteria for article selection
+
+The article must:
+
+Be published in a peer-reviewed indexed journal
+
+Use real molecular/genomic data
+
+Present explicit phylogenetic methodology
+
+Preferably have been published within the last 10 years
+
+Contain a clear description of:
+
+Data type
+
+Analytical pipeline
+
+Phylogenetic inference methods
+
+Mandatory seminar structure
+
+The presentation must strictly follow the structure below.
+
+1. Study background (brief)
+
+Biological group studied
+
+Central phylogenetic question
+
+Evolutionary scale (intraspecific, intergeneric, deep-level)
+
+This section should be concise.
+
+2. Data type(s) used
+
+Clearly describe:
+
+Data type (UCE, AHE, SNPs, etc.)
+
+Data origin (SRA, GenBank, in-house sequencing)
+
+Number of loci / SNPs / genes
+
+Number of taxa
+
+Coverage or occupancy (when applicable)
+
+3. Technical pipeline (core of the seminar)
+
+This is the most important part of the presentation.
+
+Detail:
+
+Data acquisition strategy
+
+Enrichment, assembly, mapping, SNP calling
+
+Software used
+
+Critical parameters
+
+Filtering criteria
+
+Matrix construction (concatenated or locus-based)
+
+4. Phylogenetic methods employed
+
+Describe and discuss:
+
+Methods used:
+
+Maximum likelihood
+
+Bayesian inference
+
+Multispecies coalescent (e.g., ASTRAL)
+
+Substitution models
+
+Support strategies:
+
+Bootstrap
+
+Posterior probability
+
+Gene concordance (gCF/sCF), when applicable
+
+5. Main results
+
+Overall topology obtained
+
+Well-supported vs. uncertain relationships
+
+Comparison among methods or data types
+
+Consistency or conflict between approaches
+
+6. Critical evaluation (mandatory)
+
+The student must critically discuss:
+
+Strengths of the pipeline
+
+Methodological limitations
+
+Potential biases (e.g., sampling, long-branch attraction, missing data)
+
+Whether conclusions are supported by the data
+
+What could have been done differently
+
+Presentation time
+
+25 to 30 minutes per student
+
+Suggested time allocation:
+
+Introduction: 3–5 min
+
+Methodology: 15–18 min
+
+Results and critique: 7–10 min
+
+Evaluation criteria
+
+The seminar grade will be based on the following criteria:
+
+Criterion	Weight
+Technical understanding of the article	High
+Clarity in explaining the pipeline	High
+Critical methodological analysis	High
+Organization and structure	Medium
+Oral communication	Medium
+Important notes
+
+The focus is not the taxonomic history of the group
+
+The focus is not a general literature review
+
+The main focus is how the data were generated, analyzed, and interpreted
+
+Slides must be clear, technical, and objective
+
+Submission and schedule
+
+The selected article must be communicated to the instructor in advance
+
+Repetition of the same article among students is not allowed
+
+Presentation dates will be defined in class
+
+Expected outcome
+
+By the end of the activity, the student is expected to be able to:
+
+Critically evaluate modern phylogenomic studies
+
+Understand different genomic data pipelines
+
+Justify methodological choices
+
+Recognize technical limitations in published studies
+
+
