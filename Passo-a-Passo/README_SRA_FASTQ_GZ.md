@@ -2,9 +2,7 @@
 
 > **Versão LOCAL (Linux / macOS / WSL)**  
 > Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
-> **sem SLURM, sem HPC**, executando diretamente no terminal.
->  
-> Ideal para aulas, notebooks pessoais e reprodutibilidade fora de clusters.
+
 
 ---
 
