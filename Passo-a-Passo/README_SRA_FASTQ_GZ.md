@@ -245,24 +245,47 @@ cd ~/uce_treinamento/programas
 ```bash
 https://github.com/faircloth-lab/phyluce/releases
 ```
-
-Baixar
+MacOS - M-Series CPU
 
 ```bash
+wget wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.3/distrib/phyluce-1.7.3-py36-Linux-conda.yml
+
+# the next line must be run at the same time (e.g. do not split it up) - this sets up an x86 environment
+CONDA_SUBDIR=osx-64 conda create -n phyluce-1.7.3-x86 python=3.6
+conda activate phyluce-1.7.3-x86
+conda config --env --set subdir osx-64
+
+# finally, install from the yml file
+conda env update --name phyluce-1.7.3-x86 --file phyluce-1.7.3-py36-macOS-conda.yml --prune
+
+# if you are finished
+conda deactivate
+```
+
+```bash
+MacOS - Intel CPU
+wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.2/distrib/phyluce-1.7.2-py36-macOS-conda.yml
+conda env create -n phyluce-1.7.2 --file phyluce-1.7.2-py36-macOS-conda.yml
+```
+
+```bash
+Linux
+
 wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.3/distrib/phyluce-1.7.3-py36-Linux-conda.yml
-```
-```bash
+
 conda env create -n phyluce_1.7.3 --file phyluce-1.7.3-py36-Linux-conda.yml
-Etapa 3 – Testar instalação
-Verifique se o phyluce está acessível:
 ```
-phyluce_probe_get_match_counts_from_probe_run
-Se aparecer a tela de ajuda, a instalação foi concluída com sucesso.
+Iniciar ambiente
 
+```bash
+conda activate phyluce_1.7.3
+```
 
+Testar
 
-
-
+```bash
+phylu<tab> enter
+```
 
 
 
