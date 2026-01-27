@@ -1,13 +1,6 @@
 # Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
 
 
-
-conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-
-
 > **Versão LOCAL (Linux / macOS / WSL)**  
 > Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
 
@@ -124,7 +117,7 @@ while read SRR; do
   gzip raw-fastq/${SRR}*.fastq
 done < srr_list.txt
 ```
-Downloud 
+Download 
 ```bash
  fasterq-dump SRR32233423 --split-files --threads 4 --outdir raw-fastq
 ```
@@ -170,6 +163,7 @@ done
 A limpeza de dados de sequenciamento de nova geração (NGS) é um passo crucial para garantir a qualidade e a confiabilidade das análises subsequentes. Ferramentas como o <a href="https://github.com/FelixKrueger/TrimGalore">Trim Galore</a> e o <a href="https://github.com/timflutre/trimmomatic">Trimmomatic</a> atuam removendo sequências adaptadoras e filtrando leituras de baixa qualidade, que podem introduzir ruído ou enviesar resultados. Durante o processo de sequenciamento, é comum que resíduos técnicos, como adaptadores não removidos ou bases com qualidade deteriorada nas extremidades, se acumulem nas leituras. Esses artefatos, se não tratados, podem levar a alinhamentos incorretos, montagem de genomas incompleta e interpretações equivocadas dos dados biológicos.
 </div>
 
+# Primeira Opção - Trimgalore
 
 Instalar
 ```bash
@@ -223,6 +217,218 @@ find clean-fastq/SRR32* -name "*_val_2.fq.gz" | wc -l
 ```
 
 ---
+# Segunda Opção - Trimmomatic
+
+
+Instalar Trimmomatic no ambiente bioinfo_didatico
+
+```bash
+conda install bioconda::trimmomatic
+```
+
+Exucutar  a trimmagem dos dados
+
+**importante verificar o diretório**
+
+```bash
+pwd
+```
+No diretório ~/uce_treinamento
+
+Executar
+```bash
+for r1 in raw-fastq/*_R1.fastq.gz; do
+  sample=$(basename "$r1" _R1.fastq.gz)
+
+  mkdir -p clean-fastq/"$sample"
+
+  trimmomatic PE \
+    -threads 4 \
+    -phred33 \
+    raw-fastq/"${sample}_R1.fastq.gz" \
+    raw-fastq/"${sample}_R2.fastq.gz" \
+    clean-fastq/"$sample"/"${sample}_R1_paired.fastq.gz" \
+    clean-fastq/"$sample"/"${sample}_R1_unpaired.fastq.gz" \
+    clean-fastq/"$sample"/"${sample}_R2_paired.fastq.gz" \
+    clean-fastq/"$sample"/"${sample}_R2_unpaired.fastq.gz" \
+    ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
+    LEADING:3 \
+    TRAILING:3 \
+    SLIDINGWINDOW:4:20 \
+    MINLEN:20
+done
+```
+Explição
+
+1 O for: percorrendo todas as amostras
+for r1 in raw-fastq/*_R1.fastq.gz; do
+
+
+ Isso diz ao terminal:
+
+“Para cada arquivo R1 dentro da pasta raw-fastq/…”
+
+Exemplo de arquivos:
+
+raw-fastq/Amostra1_R1.fastq.gz
+raw-fastq/Amostra2_R1.fastq.gz
+
+
+O loop roda uma vez para cada amostra.
+
+2 Extraindo o nome da amostra
+sample=$(basename "$r1" _R1.fastq.gz)
+
+
+Aqui o script:
+
+pega o nome do arquivo
+
+remove _R1.fastq.gz
+
+guarda só o nome da amostra
+
+Exemplo:
+
+Amostra1_R1.fastq.gz  →  Amostra1
+
+
+Isso permite usar o mesmo nome para R1, R2 e saída.
+
+3️ Criando a pasta de saída da amostra
+mkdir -p clean-fastq/"$sample"
+
+
+ Cria uma pasta específica para cada amostra, por exemplo:
+
+clean-fastq/Amostra1/
+
+
+-p garante que não dê erro se a pasta já existir.
+
+4️ Chamando o Trimmomatic (modo paired-end)
+trimmomatic PE \
+
+
+Executa o Trimmomatic em modo paired-end (PE)
+Isso significa:
+
+R1 e R2 são tratados juntos
+
+o pareamento entre reads é preservado
+
+5️ Usando 4 núcleos de CPU
+-threads 4 \
+
+
+Diz ao Trimmomatic:
+
+“Use 4 núcleos do processador”
+
+Deixa o processamento mais rápido.
+
+6️ Tipo de qualidade (Phred33)
+-phred33 \
+
+
+👉 Indica o padrão de codificação de qualidade
+Phred33 é o padrão moderno (Illumina, SRA, etc.).
+
+7️ Arquivos de entrada (R1 e R2)
+raw-fastq/"${sample}_R1.fastq.gz" \
+raw-fastq/"${sample}_R2.fastq.gz" \
+
+
+São os FASTQs brutos da amostra:
+
+leitura forward (R1)
+
+leitura reverse (R2)
+
+8️⃣ Arquivos de saída (4 arquivos!)
+clean-fastq/"$sample"/"${sample}_R1_paired.fastq.gz" \
+clean-fastq/"$sample"/"${sample}_R1_unpaired.fastq.gz" \
+clean-fastq/"$sample"/"${sample}_R2_paired.fastq.gz" \
+clean-fastq/"$sample"/"${sample}_R2_unpaired.fastq.gz" \
+
+
+ O Trimmomatic sempre gera quatro arquivos:
+
+Arquivo	O que contém
+R1_paired	R1 que manteve par com R2
+R2_paired	R2 correspondente
+R1_unpaired	R1 cujo par foi perdido
+R2_unpaired	R2 cujo par foi perdido
+
+Para filogenômica (UCE/AHE), você normalmente usa só os paired.
+
+9️ Remoção de adaptadores Illumina
+ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
+
+
+ Remove adaptadores de sequenciamento.
+
+Significado simples:
+
+TruSeq3-PE.fa → adaptadores Illumina padrão
+
+2 → até 2 mismatches permitidos
+
+30 → score para cortar adaptador
+
+10 → score mínimo para manter o corte
+
+Isso evita que adaptadores atrapalhem montagem e mapeamento.
+
+10 Corte de baixa qualidade nas pontas
+LEADING:3 \
+TRAILING:3 \
+
+
+ Remove bases ruins:
+
+no começo (LEADING)
+
+no final (TRAILING)
+
+Se a qualidade for menor que 3, a base é cortada.
+
+11 Corte interno por janela deslizante
+SLIDINGWINDOW:4:20 \
+
+
+Analisa a read em janelas de 4 bases:
+
+se a qualidade média < 20
+
+a read é cortada naquele ponto
+
+Isso remove regiões internas ruins.
+
+12 Descartando reads muito curtos
+MINLEN:20
+
+
+Qualquer read com menos de 20 bp após os cortes:
+
+é descartada
+
+Evita ruído e sequências inúteis.
+
+1️3 Fim do loop
+done
+
+
+Fecha o loop e passa para a próxima amostra.
+
+Resumo em uma frase
+
+Este script:
+
+percorre todas as amostras, remove adaptadores, corta regiões de baixa qualidade, descarta reads curtas e gera FASTQs limpos pareados, prontos para análises filogenômicas.
+
+---
+
 Finalizar o ambiente
 
 ```bash
@@ -256,28 +462,6 @@ cd ~/uce_treinamento/programas
 
 ```bash
 https://github.com/faircloth-lab/phyluce/releases
-```
-MacOS - M-Series CPU
-
-```bash
-wget wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.3/distrib/phyluce-1.7.3-py36-Linux-conda.yml
-
-# the next line must be run at the same time (e.g. do not split it up) - this sets up an x86 environment
-CONDA_SUBDIR=osx-64 conda create -n phyluce-1.7.3-x86 python=3.6
-conda activate phyluce-1.7.3-x86
-conda config --env --set subdir osx-64
-
-# finally, install from the yml file
-conda env update --name phyluce-1.7.3-x86 --file phyluce-1.7.3-py36-macOS-conda.yml --prune
-
-# if you are finished
-conda deactivate
-```
-
-```bash
-MacOS - Intel CPU
-wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.2/distrib/phyluce-1.7.2-py36-macOS-conda.yml
-conda env create -n phyluce-1.7.2 --file phyluce-1.7.2-py36-macOS-conda.yml
 ```
 
 ```bash
