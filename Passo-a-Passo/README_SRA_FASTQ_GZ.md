@@ -1,138 +1,267 @@
-# Download de dados do NCBI SRA em FASTQ.GZ
+# Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
 
-Este repositório fornece um **workflow simples, robusto e reprodutível** para baixar dados do **NCBI Sequence Read Archive (SRA)** e gerar arquivos **.fastq.gz**, prontos para análises genômicas (UCE, AHE, WGS, RNA-seq).
-
-O tutorial foi desenhado para **execução local** (Linux, macOS ou Windows via WSL), sem SLURM ou HPC.
+> **Versão LOCAL (Linux / macOS / WSL)**  
+> Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
+> **sem SLURM, sem HPC**, executando diretamente no terminal.
+>  
+> Ideal para aulas, notebooks pessoais e reprodutibilidade fora de clusters.
 
 ---
 
 ## Visão geral do fluxo
 
-SRR list (.txt) → fasterq-dump → FASTQ → compressão → FASTQ.GZ
+1. Download dos dados (SRA → FASTQ.GZ)
+2. Controle de qualidade e limpeza (Trim Galore)
+3. Montagem de contigs (SPAdes via PHYLUCE)
+4. Identificação de loci UCE (PHYLUCE)
+5. Extração de FASTAs e filtragem por ocupância
+6. Alinhamento (MAFFT)
+7. Poda interna (Gblocks)
+8. Matrizes finais
+9. Inferência filogenética:
+   - Gene trees (IQ-TREE 3)
+   - Species tree (ASTRAL)
+   - Concatenado (IQ-TREE 3)
+   - Bayesiano (MrBayes)
 
 ---
 
 ## Requisitos
 
+- Linux / macOS / Windows (WSL)
 - Conda / Miniconda
-- Linux, macOS ou Windows (WSL)
-- Espaço em disco suficiente (FASTQs podem ser grandes)
+- ≥ 16 GB RAM recomendado
+- ≥ 50 GB espaço em disco (depende do dataset)
 
 ---
 
-## Instalação do SRA Toolkit
+## Ambientes Conda
+
+Iniciar ambiente
 
 ```bash
-conda create -n sra -c bioconda sra-tools -y
-conda activate sra
+conda activate bioinfo_didatico
+```
+ou
+``bash
+source ~/miniconda3/envs/bioinfo_didatico
 ```
 
-Verifique:
+---
+
+## Estrutura de diretórios
 
 ```bash
-fasterq-dump --version
+uce_treinamento/
+├── raw-fastq/
+├── clean-fastq/
+├── assembly/
+├── probes/
+├── taxon-set/
+│   └── all/
+└── log/
 ```
-
----
-
-## Estrutura do projeto
-
-```text
-.
-├── srr_list.txt
-├── fastq/
-└── logs/
+Acessar diretório
+```bash
+cd uce_treinamento
 ```
-
-Crie os diretórios:
+## Criar novos diretórios
 
 ```bash
-mkdir -p fastq logs
+mkdir -p raw-fastq clean-fastq assembly probes taxon-set/all,log
 ```
 
 ---
 
-## Lista de acessos SRA
+## Acesso aos dados (NCBI SRA)
 
-Edite `srr_list.txt` com **um SRR por linha**:
+**BioProject:** PRJNA1161786  
+https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP561602
 
-```text
-SRR32392853
-SRR32392854
-SRR32392855
+Crie `srr_list.txt` com um SRR por linha.
+
+```bash
+nano srr_list.txt
 ```
 
----
+copie e cole
 
-## Download dos dados (gerando FASTQ.GZ)
+```bash
+SRR32233422
+```
 
-> O `fasterq-dump` não gera `.gz` diretamente.  
-> A compactação é feita logo após o download.
+### Download local (FASTQ.GZ)
 
 ```bash
 while read SRR; do
-  echo "Baixando ${SRR}..."
-
-  fasterq-dump ${SRR} \
-    --split-files \
-    --threads 4 \
-    --outdir fastq \
-    >> logs/fasterq.log 2>&1
-
-  gzip fastq/${SRR}*.fastq
+  fasterq-dump $SRR --split-files --threads 4 --outdir raw-fastq
+  gzip raw-fastq/${SRR}*.fastq
 done < srr_list.txt
 ```
 
-### Resultado esperado
-
-- **Paired-end**
-  - SRRxxxx_1.fastq.gz
-  - SRRxxxx_2.fastq.gz
-
-- **Single-end**
-  - SRRxxxx.fastq.gz
-
 ---
 
-## Verificação
+## Limpeza com Trim Galore (local)
+
+Instalar
+```bash
+conda install bioconda::trim-galore
+```
+Testar
 
 ```bash
-ls -lh fastq
+trim-galore --version
 ```
 
-Buscar erros:
-
 ```bash
-grep -i error logs/fasterq.log
-```
-
----
-
-## Dica de performance (opcional)
-
-Use compressão paralela com `pigz`:
-
-```bash
-conda install -c conda-forge pigz
-```
-
-Substitua `gzip` por:
-
-```bash
-pigz fastq/${SRR}*.fastq
+for r1 in raw-fastq/*_1.fastq.gz; do
+  sample=$(basename $r1 _1.fastq.gz)
+  trim_galore --paired     raw-fastq/${sample}_1.fastq.gz     raw-fastq/${sample}_2.fastq.gz     --cores 4     --gzip     --output_dir clean-fastq/${sample}
+done
 ```
 
 ---
 
-## Observações importantes
+## Montagem com SPAdes (via PHYLUCE, local)
 
-- `--split-files` funciona para dados paired-end e single-end
-- Nunca execute `gzip` antes do término do download
-- Confira espaço em disco antes de iniciar
+Criar `assembly.conf` automaticamente:
+
+```bash
+echo "[samples]" > assembly.conf
+for d in clean-fastq/*; do
+  s=$(basename $d)
+  echo "$s:$PWD/$d" >> assembly.conf
+done
+```
+
+Executar montagem:
+
+```bash
+phyluce_assembly_assemblo_spades   --conf assembly.conf   --output assembly   --cores 8   --memory 32
+```
+
+---
+
+## Identificação de loci UCE
+
+Coloque as probes em `probes/probes.fasta`.
+
+```bash
+phyluce_assembly_match_contigs_to_probes   --contigs assembly/contigs   --probes probes/probes.fasta   --output uce-matches   --min-coverage 80   --min-identity 80
+```
+
+---
+
+## Extração de loci
+
+Criar lista de táxons:
+
+```bash
+echo "[all]" > taxa.conf
+ls uce-matches | grep -v sqlite >> taxa.conf
+```
+
+Contagem:
+
+```bash
+phyluce_assembly_get_match_counts   --locus-db uce-matches/probe.matches.sqlite   --taxon-list-config taxa.conf   --taxon-group all   --incomplete-matrix   --output taxon-set/all/all-taxa-incomplete.conf
+```
+
+Extração FASTA:
+
+```bash
+phyluce_assembly_get_fastas_from_match_counts   --contigs assembly/contigs   --locus-db uce-matches/probe.matches.sqlite   --match-count-output taxon-set/all/all-taxa-incomplete.conf   --output taxon-set/all/all-taxa-incomplete.fasta   --incomplete-matrix taxon-set/all/all-taxa-incomplete.incomplete
+```
+
+---
+
+## Alinhamento (MAFFT)
+
+```bash
+phyluce_align_seqcap_align   --input taxon-set/all/all-taxa-incomplete.fasta   --output taxon-set/all/mafft   --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
+```
+
+---
+
+## Poda interna com Gblocks
+
+```bash
+phyluce_align_get_gblocks_trimmed_alignments_from_untrimmed   --alignments taxon-set/all/mafft   --output taxon-set/all/mafft-gblocks   --b1 0.5 --b2 0.85 --b3 4 --b4 8   --cores 2
+```
+
+Limpar cabeçalhos:
+
+```bash
+phyluce_align_remove_locus_name_from_files   --alignments taxon-set/all/mafft-gblocks   --output taxon-set/all/mafft-gblocks-clean
+```
+
+---
+
+## Matrizes por ocupância (ex.: 75%)
+
+```bash
+phyluce_align_get_only_loci_with_min_taxa   --alignments taxon-set/all/mafft-gblocks-clean   --taxa 10   --percent 0.75   --output taxon-set/all/75p
+```
+
+---
+
+## Gene trees (IQ-TREE 3, local)
+
+```bash
+for aln in taxon-set/all/75p/*.fasta; do
+  iqtree3 -s $aln -m MFP -bb 1000 -alrt 1000 -nt 4
+done
+```
+
+---
+
+## Species tree (ASTRAL local)
+
+```bash
+cat taxon-set/all/75p/*.treefile > genes.tree
+nw_ed genes.tree 'i & b<=10' o > pruned.tree
+astral4 -i pruned.tree -o species.tree
+```
+
+---
+
+## Concatenado (IQ-TREE 3)
+
+```bash
+phyluce_align_concatenate_alignments   --alignments taxon-set/all/75p   --output taxon-set/all/concat   --phylip
+```
+
+```bash
+iqtree3 -s taxon-set/all/concat.phylip   -m MFP+MERGE   -bb 1000   -alrt 1000   -nt AUTO
+```
+
+---
+
+## Bayesiano (MrBayes, local)
+
+```bash
+mb taxon-set/all/concat.nexus
+```
+
+Adicionar bloco `begin mrbayes;` conforme necessário.
+
+---
+
+## Observação final
+
+Este tutorial é **100% executável localmente**, sem dependência de SLURM ou HPC.
+Para datasets grandes, reduza:
+- número de threads
+- percentuais de ocupância
+- número de réplicas de bootstrap
 
 ---
 
 ## Referências
 
-- NCBI SRA Toolkit  
-  https://github.com/ncbi/sra-tools
+- Faircloth BC (2016) PHYLUCE — *Bioinformatics*
+- Zhang et al. (2018, 2025) ASTRAL / ASTER
+- Castresana (2000) Gblocks
+
+
+  
