@@ -174,6 +174,17 @@ SRR32392864
 ```
 Baixar os dados brutos
 
+Verificar a instalação do GZIP
+```bash
+gzip --version
+```
+
+Instalar quando necessário
+
+```bash
+conda install conda-forge::gzip
+```
+
 ```bash
 while read SRR; do
   echo "Baixando $SRR..."
