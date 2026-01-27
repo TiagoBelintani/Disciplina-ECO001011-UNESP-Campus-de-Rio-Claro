@@ -188,6 +188,62 @@ done
 ```
 
 ---
+Finalizar o ambiente
+
+```bash
+conda deactivate
+```
+
+### Phyluce <https://phyluce.readthedocs.io/en/latest/tutorials/index.html>
+
+
+**PHYLUCE (PHYlogenetic estimation Using Loci from UltraConserved Elements)** é um conjunto integrado de ferramentas em Python desenvolvido para processar, organizar e analisar dados de captura de alvos — especialmente Elementos Ultraconservados (UCEs) e AHE/exons — com o objetivo de inferência filogenética em larga escala.
+
+Em termos práticos, o PHYLUCE automatiza o caminho entre dados brutos de sequenciamento e matrizes filogenéticas, permitindo:
+(i) montar contigs a partir de leituras,
+(ii) identificar quais contigs correspondem aos loci-alvo (probes),
+(iii) extrair e organizar esses loci por táxon,
+(iv) alinhar sequências homólogas e
+(v) gerar matrizes filtradas por ocupância para análises concatenadas ou baseadas em árvores gênicas.
+
+Do ponto de vista conceitual, o PHYLUCE não infere árvores; ele prepara dados filogenômicos de forma padronizada e reprodutível. Seu papel central é garantir homologia correta entre loci, controle de qualidade e consistência na construção de supermatrizes e conjuntos de alinhamentos multi-locus, que depois são analisados por programas como IQ-TREE, RAxML, ASTRAL ou MrBayes.
+
+Criar o ambiente Conda para o PHYLUCE
+
+
+Acessar versões disponíveis
+
+Acessar diretório
+
+```bash
+cd ~/uce_treinamento/programas
+```
+
+```bash
+https://github.com/faircloth-lab/phyluce/releases
+```
+
+Baixar
+
+```bash
+wget https://raw.githubusercontent.com/faircloth-lab/phyluce/v1.7.3/distrib/phyluce-1.7.3-py36-Linux-conda.yml
+```
+```bash
+conda env create -n phyluce_1.7.3 --file phyluce-1.7.3-py36-Linux-conda.yml
+Etapa 3 – Testar instalação
+Verifique se o phyluce está acessível:
+```
+phyluce_probe_get_match_counts_from_probe_run
+Se aparecer a tela de ajuda, a instalação foi concluída com sucesso.
+
+
+
+
+
+
+
+
+---
 ## Montagem dos Dados com SPAdes
 
 <div align="justify">
