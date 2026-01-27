@@ -124,7 +124,21 @@ Salvar na pasta raw-fastq
 ```bash
 https://mega.nz/file/oRBGFBrQ#AuWgPbEPMY_8llbiBYBIPgX26x9G7JwPM245bzElCR8
 ```
+Organizar diretório e preparar
+
+```bash
+unzip DADOS_Idiopidae-20260125T191837Z-3-001.zip
 ---
+mv DADOS_Idiopidae/*.gz ~/uce_treinamento/raw-fastq
+---
+ls
+---
+Apagar dado reduntante
+
+rm -rf SRR32233422_1.fastq.gz SRR32233422_2.fastq.gz
+```
+
+
 ## Verificação de Integridade e Quantificação
 
 Para contar o número de reads em cada arquivo .fastq.gz:
