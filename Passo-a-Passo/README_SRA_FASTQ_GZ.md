@@ -181,10 +181,33 @@ trim_galore -v
 Executar a ferramenta em loop
 
 ```bash
-for r1 in raw-fastq/*_1.fastq.gz; do
-  sample=$(basename $r1 _1.fastq.gz)
-  trim_galore --paired     raw-fastq/${sample}_1.fastq.gz     raw-fastq/${sample}_2.fastq.gz     --cores 4     --gzip     --output_dir clean-fastq/${sample}
+for r1 in raw-fastq/*_R1.fastq.gz; do
+  sample=$(basename "$r1" _R1.fastq.gz)
+
+  mkdir -p clean-fastq/"$sample"
+
+  trim_galore --paired \
+    raw-fastq/"${sample}_R1.fastq.gz" \
+    raw-fastq/"${sample}_R2.fastq.gz" \
+    --cores 4 \
+    --gzip \
+    --output_dir clean-fastq/"$sample"
 done
+```
+Checagem 
+
+```bash
+for d in clean-fastq/SRR32*/; do
+  echo ">>> $(basename "$d")"
+  ls "$d"/*val_*.fq.gz 2>/dev/null | wc -l
+done
+
+```
+Contar quantas amostras têm trimming completo
+
+```bash
+find clean-fastq/SRR32* -name "*_val_1.fq.gz" | wc -l
+find clean-fastq/SRR32* -name "*_val_2.fq.gz" | wc -l
 ```
 
 ---
