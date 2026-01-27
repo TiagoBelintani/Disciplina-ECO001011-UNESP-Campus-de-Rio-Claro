@@ -258,170 +258,6 @@ for r1 in raw-fastq/*_R1.fastq.gz; do
     MINLEN:20
 done
 ```
-Explição
-
-1 O for: percorrendo todas as amostras
-for r1 in raw-fastq/*_R1.fastq.gz; do
-
-
- Isso diz ao terminal:
-
-“Para cada arquivo R1 dentro da pasta raw-fastq/…”
-
-Exemplo de arquivos:
-
-raw-fastq/Amostra1_R1.fastq.gz
-raw-fastq/Amostra2_R1.fastq.gz
-
-
-O loop roda uma vez para cada amostra.
-
-2 Extraindo o nome da amostra
-sample=$(basename "$r1" _R1.fastq.gz)
-
-
-Aqui o script:
-
-pega o nome do arquivo
-
-remove _R1.fastq.gz
-
-guarda só o nome da amostra
-
-Exemplo:
-
-Amostra1_R1.fastq.gz  →  Amostra1
-
-
-Isso permite usar o mesmo nome para R1, R2 e saída.
-
-3️ Criando a pasta de saída da amostra
-mkdir -p clean-fastq/"$sample"
-
-
- Cria uma pasta específica para cada amostra, por exemplo:
-
-clean-fastq/Amostra1/
-
-
--p garante que não dê erro se a pasta já existir.
-
-4️ Chamando o Trimmomatic (modo paired-end)
-trimmomatic PE \
-
-
-Executa o Trimmomatic em modo paired-end (PE)
-Isso significa:
-
-R1 e R2 são tratados juntos
-
-o pareamento entre reads é preservado
-
-5️ Usando 4 núcleos de CPU
--threads 4 \
-
-
-Diz ao Trimmomatic:
-
-“Use 4 núcleos do processador”
-
-Deixa o processamento mais rápido.
-
-6️ Tipo de qualidade (Phred33)
--phred33 \
-
-
-👉 Indica o padrão de codificação de qualidade
-Phred33 é o padrão moderno (Illumina, SRA, etc.).
-
-7️ Arquivos de entrada (R1 e R2)
-raw-fastq/"${sample}_R1.fastq.gz" \
-raw-fastq/"${sample}_R2.fastq.gz" \
-
-
-São os FASTQs brutos da amostra:
-
-leitura forward (R1)
-
-leitura reverse (R2)
-
-8️⃣ Arquivos de saída (4 arquivos!)
-clean-fastq/"$sample"/"${sample}_R1_paired.fastq.gz" \
-clean-fastq/"$sample"/"${sample}_R1_unpaired.fastq.gz" \
-clean-fastq/"$sample"/"${sample}_R2_paired.fastq.gz" \
-clean-fastq/"$sample"/"${sample}_R2_unpaired.fastq.gz" \
-
-
- O Trimmomatic sempre gera quatro arquivos:
-
-Arquivo	O que contém
-R1_paired	R1 que manteve par com R2
-R2_paired	R2 correspondente
-R1_unpaired	R1 cujo par foi perdido
-R2_unpaired	R2 cujo par foi perdido
-
-Para filogenômica (UCE/AHE), você normalmente usa só os paired.
-
-9️ Remoção de adaptadores Illumina
-ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
-
-
- Remove adaptadores de sequenciamento.
-
-Significado simples:
-
-TruSeq3-PE.fa → adaptadores Illumina padrão
-
-2 → até 2 mismatches permitidos
-
-30 → score para cortar adaptador
-
-10 → score mínimo para manter o corte
-
-Isso evita que adaptadores atrapalhem montagem e mapeamento.
-
-10 Corte de baixa qualidade nas pontas
-LEADING:3 \
-TRAILING:3 \
-
-
- Remove bases ruins:
-
-no começo (LEADING)
-
-no final (TRAILING)
-
-Se a qualidade for menor que 3, a base é cortada.
-
-11 Corte interno por janela deslizante
-SLIDINGWINDOW:4:20 \
-
-
-Analisa a read em janelas de 4 bases:
-
-se a qualidade média < 20
-
-a read é cortada naquele ponto
-
-Isso remove regiões internas ruins.
-
-12 Descartando reads muito curtos
-MINLEN:20
-
-
-Qualquer read com menos de 20 bp após os cortes:
-
-é descartada
-
-Evita ruído e sequências inúteis.
-
-1️3 Fim do loop
-done
-
-
-Fecha o loop e passa para a próxima amostra.
-
-Resumo em uma frase
 
 Este script:
 
@@ -434,6 +270,8 @@ Finalizar o ambiente
 ```bash
 conda deactivate
 ```
+
+# Montagem dos dados "trimados"
 
 ### Phyluce <https://phyluce.readthedocs.io/en/latest/tutorials/index.html>
 
@@ -484,7 +322,6 @@ phylu<tab> enter
 ```
 
 
-
 ---
 ## Montagem dos Dados com SPAdes
 
@@ -528,7 +365,14 @@ Após a execução, a pasta de saída conterá os contigs prontos para as próxi
 
 ## Identificação de loci UCE
 
-Coloque as probes em `probes/probes.fasta`.
+
+Acesar as probes 
+
+```bash
+https://mega.nz/file/dcogTRJC#0Eu5D4N2J9Wf0VNfgwNPDlBCoblrVsTqBySwTNjZv3s
+```
+
+Salvar as probes em `probes/probes.fasta`.
 
 ```bash
 phyluce_assembly_match_contigs_to_probes   --contigs assembly/contigs   --probes probes/probes.fasta   --output uce-matches   --min-coverage 80   --min-identity 80
