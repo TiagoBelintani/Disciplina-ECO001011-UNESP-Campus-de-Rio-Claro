@@ -1,5 +1,13 @@
 # Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
 
+
+
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
+
+
 > **Versão LOCAL (Linux / macOS / WSL)**  
 > Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
 
