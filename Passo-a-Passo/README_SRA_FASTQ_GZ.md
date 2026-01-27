@@ -43,7 +43,8 @@ Iniciar ambiente
 conda activate bioinfo_didatico
 ```
 ou
-``bash
+
+```bash
 source ~/miniconda3/envs/bioinfo_didatico
 ```
 
@@ -62,6 +63,7 @@ uce_treinamento/
 └── log/
 ```
 Acessar diretório
+
 ```bash
 cd uce_treinamento
 ```
@@ -97,6 +99,14 @@ while read SRR; do
   fasterq-dump $SRR --split-files --threads 4 --outdir raw-fastq
   gzip raw-fastq/${SRR}*.fastq
 done < srr_list.txt
+```
+
+Acessar dados pré-processados
+
+Salvar na pasta raw-fastq
+
+```bash
+https://mega.nz/file/oRBGFBrQ#AuWgPbEPMY_8llbiBYBIPgX26x9G7JwPM245bzElCR8
 ```
 
 ---
