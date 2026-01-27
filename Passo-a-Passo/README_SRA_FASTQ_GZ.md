@@ -116,6 +116,10 @@ while read SRR; do
   gzip raw-fastq/${SRR}*.fastq
 done < srr_list.txt
 ```
+Downloud 
+```bash
+ fasterq-dump SRR32233423 --split-files --threads 4 --outdir raw-fastq
+```
 
 Acessar dados pré-processados
 
