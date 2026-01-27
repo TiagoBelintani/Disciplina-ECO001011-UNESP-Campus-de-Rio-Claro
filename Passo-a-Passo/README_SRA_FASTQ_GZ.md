@@ -94,6 +94,24 @@ SRR32233422
 
 ### Download local (FASTQ.GZ)
 
+verifique a instalação do Gzip e sra-tools
+
+```bash
+conda install bioconda::sra-tools
+```
+
+em seguida
+
+```bash
+gzip --version
+```
+
+Instalar
+```bash
+conda install conda-forge::gzip
+```
+
+
 ```bash
 while read SRR; do
   fasterq-dump $SRR --split-files --threads 4 --outdir raw-fastq
@@ -108,10 +126,26 @@ Salvar na pasta raw-fastq
 ```bash
 https://mega.nz/file/oRBGFBrQ#AuWgPbEPMY_8llbiBYBIPgX26x9G7JwPM245bzElCR8
 ```
+---
+## Verificação de Integridade e Quantificação
+
+Para contar o número de reads em cada arquivo .fastq.gz:
+
+```bash
+for i in raw-fastq/*.fastq.gz; do
+  echo "$i"
+  gunzip -c "$i" | wc -l | awk '{print $1/4}'
+done
+```
 
 ---
 
 ## Limpeza com Trim Galore (local)
+
+<div align="justify">
+A limpeza de dados de sequenciamento de nova geração (NGS) é um passo crucial para garantir a qualidade e a confiabilidade das análises subsequentes. Ferramentas como o <a href="https://github.com/FelixKrueger/TrimGalore">Trim Galore</a> e o <a href="https://github.com/timflutre/trimmomatic">Trimmomatic</a> atuam removendo sequências adaptadoras e filtrando leituras de baixa qualidade, que podem introduzir ruído ou enviesar resultados. Durante o processo de sequenciamento, é comum que resíduos técnicos, como adaptadores não removidos ou bases com qualidade deteriorada nas extremidades, se acumulem nas leituras. Esses artefatos, se não tratados, podem levar a alinhamentos incorretos, montagem de genomas incompleta e interpretações equivocadas dos dados biológicos.
+</div>
+
 
 Instalar
 ```bash
@@ -120,8 +154,19 @@ conda install bioconda::trim-galore
 Testar
 
 ```bash
-trim-galore --version
+trim-galore -v
 ```
+exemplo
+```bash
+trim_galore -v
+
+                        Quality-/Adapter-/RRBS-/Speciality-Trimming
+                                [powered by Cutadapt]
+                                  version 0.6.10
+
+                               Last update: 02 02 2023
+```
+Executar a ferramenta em loop
 
 ```bash
 for r1 in raw-fastq/*_1.fastq.gz; do
@@ -131,25 +176,44 @@ done
 ```
 
 ---
+## Montagem dos Dados com SPAdes
 
-## Montagem com SPAdes (via PHYLUCE, local)
+<div align="justify">
+No fluxo de análise de dados no PHYLUCE, a etapa de montagem é responsável por reconstruir sequências contíguas (contigs) a partir das leituras limpas de sequenciamento. 
+Para isso, o PHYLUCE oferece suporte a diferentes programas de montagem, todos integrados por meio de scripts próprios, mantendo um padrão de entrada e saída.
 
-Criar `assembly.conf` automaticamente:
+Os montadores disponíveis no <a href="https://phyluce.readthedocs.io/en/latest/">Phyluce</a> incluem:
+
+[SPAdes](https://github.com/ablab/spades): geralmente a opção recomendada. É fácil de instalar, produz resultados consistentes e costuma apresentar melhor desempenho na maioria dos conjuntos de dados processados com PHYLUCE.
+
+[Velvet](https://github.com/dzerbino/velvet): indicado para montagens de genomas menores ou dados com boa cobertura, sendo eficiente e rápido em cenários menos complexos.
+
+[ABySS](https://pmc.ncbi.nlm.nih.gov/articles/PMC5411771/): voltado para conjuntos de dados maiores ou genomas mais complexos, capaz de lidar com grandes volumes de leituras.
+
+Para utilizar o SPAdes dentro do PHYLUCE, o comando típico é:
+</div>
 
 ```bash
-echo "[samples]" > assembly.conf
-for d in clean-fastq/*; do
-  s=$(basename $d)
-  echo "$s:$PWD/$d" >> assembly.conf
-done
+phyluce_assembly_assemblo_spades \ 
+  --conf assembly.conf \ %+
+  --output spades-assemblies \
+  --cores 12 \
+  --memory 64
 ```
 
-Executar montagem:
+**Explicação dos parâmetros:**
 
 ```bash
-phyluce_assembly_assemblo_spades   --conf assembly.conf   --output assembly   --cores 8   --memory 32
-```
+--conf assembly.conf → Arquivo de configuração que lista as amostras, os caminhos para os arquivos FASTQ e parâmetros opcionais de montagem.
 
+--output spades-assemblies → Pasta onde os resultados da montagem serão salvos. Cada amostra terá seu próprio diretório com os contigs.
+
+--cores 12 → Número de núcleos de CPU a serem usados, acelerando o processamento.
+
+--memory 64 → Quantidade de memória RAM (em GB) disponível para a execução do SPAdes.
+
+Após a execução, a pasta de saída conterá os contigs prontos para as próximas etapas, como identificação e extração dos loci alvo.
+```
 ---
 
 ## Identificação de loci UCE
