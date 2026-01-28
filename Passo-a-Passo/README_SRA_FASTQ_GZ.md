@@ -20,8 +20,6 @@
 - [Explodindo o FASTA monolítico](#Explodindo-o-FASTA-monolítico)
 - [Alinhamento (MAFFT)](#alinhamento-mafft)
 - [Edge trimming vs Internal trimming no PHYLUCE](#Edge-trimming-vs-Internal-trimming-no-PHYLUCE)
-
-
 - [Poda interna com Gblocks](#poda-interna-com-gblocks)
 - [Matrizes por ocupância (ex.: 75%)](#matrizes-por-ocupância-ex-75)
 - [Gene trees (IQ-TREE 3, local)](#gene-trees-iq-tree-3-local)
@@ -729,7 +727,7 @@ Para informações mais precisas: https://phyluce.readthedocs.io/en/latest/tutor
 
 
 ```bash
-phyluce_align_seqcap_align   --input all-taxa-incomplete.fasta  --taxa 24  --output taxon-set/all/mafft   --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
+phyluce_align_seqcap_align   --input all-taxa-incomplete.fasta  --taxa 24  --output mafft_no_trimm  --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
 ```
 O que faz:
 Divide o FASTA multilocus em alinhamentos independentes por locus e alinha cada um com MAFFT.
@@ -738,7 +736,8 @@ Por que é importante:
 Cada locus pode ter uma história evolutiva distinta; alinhar separadamente preserva esse sinal.
 --no-trim mantém todo o alinhamento para decisões de poda posteriores.
 
-Importatante **qual --cores esta disponível?**
+##Importatante *quais --cores esta disponíveis?*
+
 Visão rápida (comando único)
 ```bash
 
