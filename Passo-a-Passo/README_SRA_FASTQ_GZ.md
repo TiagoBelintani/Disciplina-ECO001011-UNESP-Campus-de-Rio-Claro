@@ -17,6 +17,7 @@
 - [Preparar o Arquivo de Configuração](#1-preparar-o-arquivo-de-configuração)
 - [Identificação de loci UCE](#identificação-de-loci-uce)
 - [Extração de loci](#extração-de-loci)
+- [Explodindo o FASTA monolítico](#Explodindo-o-FASTA-monolítico)
 - [Alinhamento (MAFFT)](#alinhamento-mafft)
 - [Poda interna com Gblocks](#poda-interna-com-gblocks)
 - [Matrizes por ocupância (ex.: 75%)](#matrizes-por-ocupância-ex-75)
@@ -638,7 +639,7 @@ phyluce_assembly_get_fastas_from_match_counts \
 --log-path log
 ```
 
-Explodindo o FASTA monolítico
+## Explodindo o FASTA monolítico
 
 Em muitos casos, é útil obter estatísticas individuais das assembleias UCE para cada táxon. Para isso, podemos “explodir” o arquivo FASTA multilocus (monolítico) em múltiplos arquivos FASTA, organizados por táxon (ou, alternativamente, por locus).
 
