@@ -1,4 +1,4 @@
-# Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
+<img width="1168" height="76" alt="image" src="https://github.com/user-attachments/assets/85761180-ceb7-4147-a373-baab2abdd3ef" /># Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
 
 
 > **Versão LOCAL (Linux / macOS / WSL)**  
@@ -289,7 +289,6 @@ Do ponto de vista conceitual, o PHYLUCE não infere árvores; ele prepara dados 
 
 Criar o ambiente Conda para o PHYLUCE
 
-
 Acessar versões disponíveis
 
 Acessar diretório
@@ -321,9 +320,95 @@ Testar
 phylu<tab> enter
 ```
 
+Preparar pastas
+Arquivo de mapeamento (SRR → espécie)
 
+Garanta que você tem este arquivo EXATAMENTE assim (TAB entre colunas):
+
+```bash
+nano rename_map.tsv
+```
+colar 
+```bash
+SRR32233422	Moggridgea_crudeni
+SRR32233423	Arbanitis_rapax
+SRR32233424	Galeosoma_sp
+SRR32392845	Idiops_fryi
+SRR32392846	Idiops_rohdei
+SRR32392847	Idiops_rastratus
+SRR32392848	Idiops_camelus
+SRR32392849	Idiops_guri
+SRR32392850	Idiops_petiti
+SRR32392851	Idiops_germaini
+SRR32392852	Cteniza_sp
+SRR32392853	Idiops_clarus
+SRR32392854	Neocteniza_toba
+SRR32392855	Titanidiops_sp
+SRR32392856	Segregara_transvaalensis
+SRR32392857	Heligmomerus_sp
+SRR32392858	Gorgyrella_namaquensis
+SRR32392859	Ctenolophus_sp
+SRR32392860	Idiops_sp3
+SRR32392861	Idiops_sp2
+SRR32392862	Idiops_pretoriae
+SRR32392863	Idiops_kanonganus
+SRR32392864	Idiops_carajas
+SRR32392865	Idiops_pirassununguensis
+```
+Mover, renomear e organizar
+
+No diretório uce_treinamento
+
+```bash
+BASE="clean-fastq"
+
+while read srr species; do
+
+  INDIR="$BASE/$srr"
+  OUTDIR="$BASE/$species/split-adapter-quality-trimmed"
+
+  mkdir -p "$OUTDIR"
+
+  cp "$INDIR/${srr}_R1_paired.fastq.gz" \
+     "$OUTDIR/${species}_R1.fastq.gz"
+
+  cp "$INDIR/${srr}_R2_paired.fastq.gz" \
+     "$OUTDIR/${species}_R2.fastq.gz"
+
+done < rename_map.tsv
+```
+
+
+
+Cheque uma espécie:
+```bash
+ls clean-fastq/Arbanitis_rapax/split-adapter-quality-trimmed
+```
+
+Esperado:
+```bash
+Arbanitis_rapax_R1.fastq.gz
+Arbanitis_rapax_R2.fastq.gz
+```
+
+Cheque várias:
+
+```bash
+find clean-fastq -name "*_R1.fastq.gz" | wc -l
+```
+
+Deve dar 24 
+
+Apagar as pastas SRR
+
+```bash
+rm -rf clean-fastq/SRR*
+```
+
+Isso limpa a bagunça sem risco.
 ---
 ## Montagem dos Dados com SPAdes
+
 
 <div align="justify">
 No fluxo de análise de dados no PHYLUCE, a etapa de montagem é responsável por reconstruir sequências contíguas (contigs) a partir das leituras limpas de sequenciamento. 
@@ -337,12 +422,12 @@ Os montadores disponíveis no <a href="https://phyluce.readthedocs.io/en/latest/
 
 [ABySS](https://pmc.ncbi.nlm.nih.gov/articles/PMC5411771/): voltado para conjuntos de dados maiores ou genomas mais complexos, capaz de lidar com grandes volumes de leituras.
 
-Para utilizar o SPAdes dentro do PHYLUCE, o comando típico é:
+Para utilizar o Velvet dentro do PHYLUCE, o comando típico é:
 </div>
 
 ```bash
-phyluce_assembly_assemblo_spades \ 
-  --conf assembly.conf \ %+
+phyluce_assembly_assemblo_velvet \ 
+  --conf assembly.conf \ 
   --output spades-assemblies \
   --cores 12 \
   --memory 64
@@ -361,10 +446,59 @@ phyluce_assembly_assemblo_spades \
 
 Após a execução, a pasta de saída conterá os contigs prontos para as próximas etapas, como identificação e extração dos loci alvo.
 ```
----
+
+# Passos Práticos
+
+## 1. Preparar o Arquivo de Configuração
+
+<div align="justify"> 
+O arquivo `assembly.conf` é essencial para que o <a href="https://phyluce.readthedocs.io/en/latest/">Phyluce</a> saiba onde encontrar os arquivos de leituras já limpas de cada amostra.  
+
+Ele deve conter uma lista com o nome da amostra e o caminho para o diretório `split-adapter-quality-trimmed` correspondente.
+
+Pode ser facilmente construido usando um editor de tabelas (excel ou outro pacote).
+
+ou automaticamente
+```bash
+BASE="clean-fastq"
+OUT="samples.conf"
+
+echo "[samples]" > "$OUT"
+
+for d in $BASE/*/split-adapter-quality-trimmed; do
+  species=$(basename "$(dirname "$d")")
+  echo "${species}:$(pwd)/${d}" >> "$OUT"
+done
+```
+
+Criar uma pasta de log
+
+```bash
+mkdir log
+```
+
+
+## Iniciar as montagens 
+
+```bash
+conda activate phyluce-1.7.3
+```
+
+```bash
+conda install -c bioconda velvet
+```
+
+```bash
+phyluce_assembly_assemblo_velvet --output assembly --kmer 31 --cores 4 --log-path log  --config samples.conf
+```
+
+montangens
+
+```bash
+https://mega.nz/folder/pBQS0LDZ#iNkC7iV3r9N1se5PXo_exg
+```
 
 ## Identificação de loci UCE
-
 
 Acesar as probes 
 
