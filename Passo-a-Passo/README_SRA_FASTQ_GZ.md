@@ -1,4 +1,6 @@
-## 📌 Índice
+ Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
+ 
+ **Versão LOCAL (Linux / macOS / WSL)**  
 
 - [Visão geral do fluxo](#visão-geral-do-fluxo)
 - [Requisitos](#requisitos)
@@ -25,12 +27,7 @@
 - [Observação final](#observação-final)
 - [Referências](#referências)
 
-apenas arruma este link os topicos sem mudar porra nenhuma reveja este .md sem mudancas mais arrumando pontos preciso problematicos e gere o hyperlinks no inicio <img width="1168" height="76" alt="image" src="https://github.com/user-attachments/assets/85761180-ceb7-4147-a373-baab2abdd3ef" /># Tutorial: Filogenômica com Elementos Ultraconservados (UCEs) — **Execução Local**
-
-
-> **Versão LOCAL (Linux / macOS / WSL)**  
-> Este tutorial descreve **todo o pipeline UCE** desde o download dos dados até as análises filogenéticas,
-
+**Execução Local**
 
 ---
 
@@ -646,11 +643,7 @@ Para datasets grandes, reduza:
 
 ---
 
-## Referências
-
-- Faircloth BC (2016) PHYLUCE — *Bioinformatics*
-- Zhang et al. (2018, 2025) ASTRAL / ASTER
-- Castresana (2000) Gblocks
+Tiago Belintani 2026 - *Brave the sun*
 
 
   
