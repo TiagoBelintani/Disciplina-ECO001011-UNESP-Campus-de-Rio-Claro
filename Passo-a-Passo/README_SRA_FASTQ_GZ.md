@@ -638,6 +638,85 @@ phyluce_assembly_get_fastas_from_match_counts \
 --log-path log
 ```
 
+Explodindo o FASTA monolítico
+
+Em muitos casos, é útil obter estatísticas individuais das assembleias UCE para cada táxon. Para isso, podemos “explodir” o arquivo FASTA multilocus (monolítico) em múltiplos arquivos FASTA, organizados por táxon (ou, alternativamente, por locus).
+
+Essa estratégia permite avaliar, por exemplo:
+
+número de loci recuperados por táxon
+
+comprimento total e médio das sequências
+
+heterogeneidade na recuperação de UCEs entre amostras
+
+Explodir o FASTA multilocus por táxon
+
+```bash
+phyluce_assembly_explode_get_fastas_file \
+    --input all-taxa-incomplete.fasta \
+    --output exploded-fastas \
+    --by-taxon
+```
+
+O que faz:
+Separa o FASTA monolítico em um arquivo FASTA por táxon, contendo apenas os loci UCE recuperados para aquela amostra.
+
+Por que isso é útil:
+Permite inspecionar a qualidade e a completude da recuperação de UCEs amostra a amostra, algo que não é visível diretamente no FASTA multilocus.
+
+Sumarizar
+
+```
+for i in exploded-fastas/*.fasta;
+do
+    phyluce_assembly_get_fasta_lengths --input $i --csv;
+done
+```
+
+Resultado
+
+```bash
+| Amostra                  | Contigs | Total bp | Compr. médio | IC 95% | Mín (bp) | Máx (bp) | Mediana (bp) | >1 kb |
+| ------------------------ | ------: | -------: | -----------: | -----: | -------: | -------: | -----------: | ----: |
+| Arbanitis-rapax          |      36 |    4,341 |        120.6 |   1.11 |      101 |      137 |        123.0 |     0 |
+| Cteniza-sp               |     860 |  395,279 |        459.6 |   5.05 |      102 |      957 |        448.5 |     0 |
+| Ctenolophus-sp           |   1,057 |  345,942 |        327.3 |   3.58 |       99 |      698 |        316.0 |     0 |
+| Galeosoma-sp             |      39 |    4,820 |        123.6 |   0.75 |      112 |      146 |        124.0 |     0 |
+| Gorgyrella-namaquensis   |     360 |   81,162 |        225.5 |   3.68 |       57 |      504 |        249.0 |     0 |
+| Heligmomerus-sp          |     494 |  118,339 |        239.6 |   3.55 |       46 |      568 |        250.0 |     0 |
+| Idiops-camelus           |       7 |    1,318 |        188.3 |  20.22 |      126 |      250 |        176.0 |     0 |
+| Idiops-carajas           |      47 |    7,288 |        155.1 |   9.05 |       51 |      296 |        151.0 |     0 |
+| Idiops-clarus            |      34 |    5,661 |        166.5 |  11.68 |       84 |      378 |        144.0 |     0 |
+| Idiops-fryi              |     430 |  106,256 |        247.1 |   3.48 |       63 |      515 |        250.0 |     0 |
+| Idiops-germaini          |      48 |    7,572 |        157.8 |   6.68 |       74 |      278 |        147.0 |     0 |
+| Idiops-guri              |      44 |    7,934 |        180.3 |  10.44 |       72 |      425 |        168.0 |     0 |
+| Idiops-kanonganus        |      31 |    4,517 |        145.7 |   9.19 |       80 |      286 |        133.0 |     0 |
+| Idiops-petiti            |     311 |   71,395 |        229.6 |   4.32 |       48 |      673 |        249.0 |     0 |
+| Idiops-pirassununguensis |     488 |  123,462 |        253.0 |   4.07 |       69 |      623 |        250.0 |     0 |
+| Idiops-pretoriae         |     131 |   26,148 |        199.6 |   5.40 |       89 |      318 |        240.0 |     0 |
+| Idiops-rastratus         |      13 |    1,728 |        132.9 |  15.98 |       83 |      246 |        103.0 |     0 |
+| Idiops-rohdei            |     467 |  124,932 |        267.5 |   4.25 |       37 |      597 |        250.0 |     0 |
+| Idiops-sp2               |     321 |   74,794 |        233.0 |   4.06 |       34 |      488 |        249.0 |     0 |
+| Idiops-sp3               |      71 |   16,608 |        233.9 |   8.57 |      101 |      456 |        249.0 |     0 |
+| Moggridgea-crudeni       |      12 |    1,539 |        128.3 |   4.39 |      109 |      165 |        124.0 |     0 |
+| Neocteniza-toba          |     326 |   80,746 |        247.7 |   4.38 |       51 |      527 |        250.0 |     0 |
+| Segregara-transvaalensis |     475 |  114,579 |        241.2 |   3.62 |       43 |      666 |        250.0 |     0 |
+| Titanidiops-sp           |     851 |  267,454 |        314.3 |   3.88 |       43 |      800 |        278.0 |     0 |
+```
+Comentários interpretativos
+
+1) Forte heterogeneidade na recuperação de UCEs
+Há grande variação no número de contigs por amostra (de 7 a >1.000), indicando diferenças reais de qualidade/quantidade de DNA, eficiência de captura ou sucesso de montagem.
+
+2) Comprimentos coerentes com UCEs
+As medianas concentram-se entre ~240–250 bp na maioria das amostras, consistente com regiões núcleo + flancos após captura. Amostras com medianas muito baixas tendem a ter recuperação limitada.
+
+3) Amostras problemáticas evidentes
+Casos como Idiops-camelus, Idiops-rastratus e Moggridgea-crudeni apresentam pouquíssimos contigs, o que impactará ocupância e estabilidade filogenética.
+
+4) Ausência de contigs >1 kb
+Nenhuma amostra apresenta loci longos (>1 kb), o que é esperado para UCEs após captura e poda; não indica problema.
 ---
 
 ## Alinhamento (MAFFT)
