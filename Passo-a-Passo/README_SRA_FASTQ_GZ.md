@@ -944,7 +944,7 @@ Executar:
 
 ```
 phyluce_align_get_align_summary_data \
-    --alignments mafft-nexus-edge-trimmed \
+    --alignments mafft_no_trimm \
     --cores 4 \
     --log-path log
 ```
