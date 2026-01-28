@@ -729,7 +729,7 @@ Para informações mais precisas: https://phyluce.readthedocs.io/en/latest/tutor
 
 
 ```bash
-phyluce_align_seqcap_align   --input taxon-set/all/all-taxa-incomplete.fasta   --output taxon-set/all/mafft   --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
+phyluce_align_seqcap_align   --input all-taxa-incomplete.fasta  --taxa 24  --output taxon-set/all/mafft   --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
 ```
 O que faz:
 Divide o FASTA multilocus em alinhamentos independentes por locus e alinha cada um com MAFFT.
@@ -737,6 +737,45 @@ Divide o FASTA multilocus em alinhamentos independentes por locus e alinha cada 
 Por que é importante:
 Cada locus pode ter uma história evolutiva distinta; alinhar separadamente preserva esse sinal.
 --no-trim mantém todo o alinhamento para decisões de poda posteriores.
+
+Importatante **qual --cores esta disponível?**
+Visão rápida (comando único)
+```bash
+
+lscpu
+```
+
+```bash
+Campos importantes na saída:
+
+CPU(s):                32
+Thread(s) per core:    2
+Core(s) per socket:    8
+Socket(s):             2
+```
+Exemplo: 
+```bash
+Se lscpu mostrar:
+
+CPU(s):                24
+Thread(s) per core:    2
+Core(s) per socket:    6
+Socket(s):             2
+
+
+➡️ Cores físicos = 6 × 2 = 12
+
+Então, no PHYLUCE:
+--cores 10
+```
+
+
+Interpretação
+
+CPU(s) → threads lógicos (32)
+Core(s) per socket × Socket(s) → cores físicos
+→ 8 × 2 = 16 cores físicos
+Thread(s) per core → hyper-threading (2)
 
 ---
 ## Edge trimming vs Internal trimming no PHYLUCE
@@ -810,7 +849,7 @@ Durante o alinhamento:
 
 X → locus descartado porque o trimming reduziu o alinhamento a quase nada
 
-📌 Muitos X não indicam problema quando:
+Muitos X não indicam problema quando:
 
 o número de táxons é pequeno
 
@@ -818,7 +857,9 @@ os loci são curtos ou incompletos
 
 Por que tantos loci foram descartados?
 
+```bash
 “The number of potential alignments dropped here is abnormally large…”
+```
 
 Isso ocorre porque n = 4 táxons, o que implica:
 
@@ -831,6 +872,7 @@ edge trimming remove quase tudo
 Em datasets reais (20–200 táxons), isso não acontece.
 
 Estatísticas de alinhamento: o que realmente importa?
+
 Bloco Alignment summary
 
 ```
@@ -897,25 +939,16 @@ Edge trimming remove regiões problemáticas nas extremidades dos alinhamentos, 
 Internal trimming remove regiões mal alinhadas internas e deve ser feito com ferramentas específicas (Gblocks, TrimAl, ClipKit).
 Em PHYLUCE, edge trimming é automático; internal trimming é uma etapa posterior e opcional.
 
-Boas práticas (recomendado)
+## Sumarizar os alinhamentos
 
-Use edge trimming sempre
+Executar:
 
-Aplique internal trimming leve (ex.: Gblocks permissivo ou ClipKit)
-
-Compare resultados:
-
-edge only
-
-edge + internal
-
-Avalie impacto em:
-
-número de loci
-
-ocupância
-
-estabilidade topológica
+```
+phyluce_align_get_align_summary_data \
+    --alignments mafft-nexus-edge-trimmed \
+    --cores 4 \
+    --log-path log
+```
 
 ## Poda interna com Gblocks
 
