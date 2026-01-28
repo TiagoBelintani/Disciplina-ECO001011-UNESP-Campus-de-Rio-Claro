@@ -554,28 +554,105 @@ Criar lista de táxons:
 
 ```bash
 echo "[all]" > taxa.conf
-ls uce-matches | grep -v sqlite >> taxa.conf
+
+ls uce-matches/*.lastz \
+  | xargs -n 1 basename \
+  | sed 's/\.contigs\.lastz$//' \
+  | sort \
+  >> taxa.conf
+```
+Exemplo do taxa.conf
+```bash
+[all]
+Arbanitis_rapax
+Cteniza_sp
+Ctenolophus_sp
+Galeosoma_sp
+Gorgyrella_namaquensis
+Heligmomerus_sp
+Idiops_camelus
+Idiops_carajas
+Idiops_clarus
+Idiops_fryi
+Idiops_germaini
+Idiops_guri
+Idiops_kanonganus
+Idiops_petiti
+Idiops_pirassununguensis
+Idiops_pretoriae
+Idiops_rastratus
+Idiops_rohdei
+Idiops_sp2
+Idiops_sp3
+Moggridgea_crudeni
+Neocteniza_toba
+Segregara_transvaalensis
+Titanidiops_sp
+```
+Vamos para um novo diretório de trabalho
+
+```
+mkdir ~/uce_treinamento/taxon-set/all
 ```
 
-Contagem:
+Vamos para a contagem
+
+Utilizaremos o comando phyluce_assembly_get_match_counts que lê o banco de dados probe.matches.sqlite (gerado no passo de match contigs × probes) e resume quantos loci UCE cada táxon possui, produzindo arquivos de configuração que serão usados para extrair FASTAs e montar matrizes depois.
+
+Ele não extrai sequências — apenas conta e organiza os loci por táxon.
 
 ```bash
-phyluce_assembly_get_match_counts   --locus-db uce-matches/probe.matches.sqlite   --taxon-list-config taxa.conf   --taxon-group all   --incomplete-matrix   --output taxon-set/all/all-taxa-incomplete.conf
+phyluce_assembly_get_match_counts \
+  --locus-db ~/uce_treinamento/uce-matches/probe.matches.sqlite \
+  --taxon-list-config ~/uce_treinamento/taxa.conf \
+  --taxon-group all \
+  --incomplete-matrix \
+  --output ~/uce_treinamento/taxon-set/all/all-taxa-incomplete.conf
 ```
+Agora acessamos o diretório
 
+Acessar:
+
+```bash
+cd ~/uce_treinamento/taxon-set/all
+```
+Podemos listar:
+
+```bash
+ls
+```
+Precisamos de um novo log-path
+
+```
+mkdir ~/uce_treinamento/taxon-set/all/log
+```
 Extração FASTA:
 
 ```bash
-phyluce_assembly_get_fastas_from_match_counts   --contigs assembly/contigs   --locus-db uce-matches/probe.matches.sqlite   --match-count-output taxon-set/all/all-taxa-incomplete.conf   --output taxon-set/all/all-taxa-incomplete.fasta   --incomplete-matrix taxon-set/all/all-taxa-incomplete.incomplete
+phyluce_assembly_get_fastas_from_match_counts \
+  --contigs ~/uce_treinamento/assembly/contigs \
+  --locus-db ~/uce_treinamento/uce-matches/probe.matches.sqlite \
+  --match-count-output ~/uce_treinamento/taxon-set/all/all-taxa-incomplete.conf \
+  --output ~/uce_treinamento/taxon-set/all/all-taxa-incomplete.fasta \
+  --incomplete-matrix ~/uce_treinamento/taxon-set/all/all-taxa-incomplete.incomplete \
+--log-path log
 ```
 
 ---
 
 ## Alinhamento (MAFFT)
 
+
+
 ```bash
 phyluce_align_seqcap_align   --input taxon-set/all/all-taxa-incomplete.fasta   --output taxon-set/all/mafft   --aligner mafft   --cores 4   --incomplete-matrix   --no-trim
 ```
+O que faz:
+Divide o FASTA multilocus em alinhamentos independentes por locus e alinha cada um com MAFFT.
+
+Por que é importante:
+Cada locus pode ter uma história evolutiva distinta; alinhar separadamente preserva esse sinal.
+--no-trim mantém todo o alinhamento para decisões de poda posteriores.
 
 ---
 
@@ -583,6 +660,7 @@ phyluce_align_seqcap_align   --input taxon-set/all/all-taxa-incomplete.fasta   -
 
 ```bash
 phyluce_align_get_gblocks_trimmed_alignments_from_untrimmed   --alignments taxon-set/all/mafft   --output taxon-set/all/mafft-gblocks   --b1 0.5 --b2 0.85 --b3 4 --b4 8   --cores 2
+
 ```
 
 Limpar cabeçalhos:
@@ -590,6 +668,11 @@ Limpar cabeçalhos:
 ```bash
 phyluce_align_remove_locus_name_from_files   --alignments taxon-set/all/mafft-gblocks   --output taxon-set/all/mafft-gblocks-clean
 ```
+O que faz:
+Remove regiões mal alinhadas ou excessivamente variáveis dentro de cada locus.
+
+Por que é importante:
+Reduz ruído filogenético e melhora a qualidade do sinal, especialmente em regiões flanqueadoras de UCEs.
 
 ---
 
