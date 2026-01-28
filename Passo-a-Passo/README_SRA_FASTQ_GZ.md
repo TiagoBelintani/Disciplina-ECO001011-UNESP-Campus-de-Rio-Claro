@@ -12,7 +12,7 @@
 - [Primeira Opção - Trimgalore](#primeira-opção---trimgalore)
 - [Segunda Opção - Trimmomatic](#segunda-opção---trimmomatic)
 - [Montagem dos dados "trimados"](#montagem-dos-dados-trimados)
-- [Montagem dos Dados com SPAdes](#montagem-dos-dados-com-spades)
+- [Montagem dos Dados com Velvet](#montagem-dos-dados-com-velvet)
 - [Passos Práticos](#passos-práticos)
 - [Preparar o Arquivo de Configuração](#1-preparar-o-arquivo-de-configuração)
 - [Identificação de loci UCE](#identificação-de-loci-uce)
@@ -530,10 +530,20 @@ Acesar as probes
 https://mega.nz/file/dcogTRJC#0Eu5D4N2J9Wf0VNfgwNPDlBCoblrVsTqBySwTNjZv3s
 ```
 
+Biopython
+```bash
+conda install -c conda-forge biopython
+```
+Lastz
+
+```bash
+conda install -c bioconda lastz
+```
+
 Salvar as probes em `probes/probes.fasta`.
 
 ```bash
-phyluce_assembly_match_contigs_to_probes   --contigs assembly/contigs   --probes probes/probes.fasta   --output uce-matches   --min-coverage 80   --min-identity 80
+phyluce_assembly_match_contigs_to_probes   --contigs assembly/contigs   --probes probes/probes.fasta   --output uce-matches   --min-coverage 65  --min-identity 65
 ```
 
 ---
