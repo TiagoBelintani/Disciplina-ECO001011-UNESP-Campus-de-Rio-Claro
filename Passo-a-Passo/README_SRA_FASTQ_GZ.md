@@ -19,6 +19,9 @@
 - [Extração de loci](#extração-de-loci)
 - [Explodindo o FASTA monolítico](#Explodindo-o-FASTA-monolítico)
 - [Alinhamento (MAFFT)](#alinhamento-mafft)
+- [Edge trimming vs Internal trimming no PHYLUCE](#Edge-trimming-vs-Internal-trimming-no-PHYLUCE)
+
+
 - [Poda interna com Gblocks](#poda-interna-com-gblocks)
 - [Matrizes por ocupância (ex.: 75%)](#matrizes-por-ocupância-ex-75)
 - [Gene trees (IQ-TREE 3, local)](#gene-trees-iq-tree-3-local)
@@ -722,6 +725,7 @@ Nenhuma amostra apresenta loci longos (>1 kb), o que é esperado para UCEs após
 
 ## Alinhamento (MAFFT)
 
+Para informações mais precisas: https://phyluce.readthedocs.io/en/latest/tutorials/tutorial-1.html#aligning-uce-loci
 
 
 ```bash
@@ -735,6 +739,183 @@ Cada locus pode ter uma história evolutiva distinta; alinhar separadamente pres
 --no-trim mantém todo o alinhamento para decisões de poda posteriores.
 
 ---
+## Edge trimming vs Internal trimming no PHYLUCE
+
+O que é edge trimming?
+
+Edge trimming é a remoção automática de regiões mal suportadas nas extremidades (5’ e 3’) dos alinhamentos após o alinhamento com MAFFT.
+
+Essas regiões de borda geralmente:
+
+têm muitos gaps (-)
+
+aparecem porque diferentes táxons recuperam fragmentos de comprimentos distintos
+
+não representam homologia confiável
+
+O núcleo do alinhamento é preservado; apenas as extremidades são podadas.
+
+Como o PHYLUCE faz edge trimming?
+
+Quando você executa:
+
+```bash
+phyluce_align_seqcap_align
+```
+
+
+sem --no-trim, o PHYLUCE:
+
+Alinha cada locus com MAFFT
+
+Avalia as extremidades do alinhamento usando:
+
+janelas deslizantes (--window, padrão = 20)
+
+proporção mínima de sítios informativos (--threshold, padrão ≈ 0.65)
+
+Remove colunas iniciais e finais com:
+
+muitos gaps
+
+baixa ocupância de táxons
+
+Descarta loci inteiros se, após a poda, o alinhamento ficar curto demais (--min_length, padrão = 100 bp)
+
+Isso é edge trimming.
+
+Interpretando o log do edge trimming
+Loci descartados antes do alinhamento
+```bash
+WARNING - DROPPED locus uce-4698. Too few taxa (N < 3).
+```
+
+Significa que o locus:
+
+estava presente em poucos táxons
+
+não atende ao mínimo exigido (--taxa)
+
+Isso não é erro — é controle de qualidade.
+
+Pontos (.) e X no log
+
+Durante o alinhamento:
+
+```bash
+........X...X....
+```
+
+. → locus alinhado e podado com sucesso
+
+X → locus descartado porque o trimming reduziu o alinhamento a quase nada
+
+📌 Muitos X não indicam problema quando:
+
+o número de táxons é pequeno
+
+os loci são curtos ou incompletos
+
+Por que tantos loci foram descartados?
+
+“The number of potential alignments dropped here is abnormally large…”
+
+Isso ocorre porque n = 4 táxons, o que implica:
+
+pouca sobreposição entre sequências
+
+extremidades dominadas por gaps
+
+edge trimming remove quase tudo
+
+Em datasets reais (20–200 táxons), isso não acontece.
+
+Estatísticas de alinhamento: o que realmente importa?
+Bloco Alignment summary
+
+```
+[Alignments] loci: 190
+[Alignments] mean: 452.80
+```
+
+ Número de loci recuperados e tamanho médio — principais métricas.
+```bash
+Bloco Data matrix completeness
+[Matrix 75%] 190 alignments
+[Matrix 90%] 29 alignments
+```
+
+Mostra quantos loci sobrevivem a diferentes níveis de ocupância.
+Isso orienta decisões como:
+
+usar matriz 50% vs 75%
+
+balancear número de loci vs completude
+
+Aviso importante do manual
+
+edge trimming does not remove internal gaps
+
+Isso é crucial:
+
+gaps internos inflacionam o comprimento do alinhamento
+
+estatísticas de tamanho podem parecer maiores do que o sinal real
+
+O que é internal trimming?
+
+Internal trimming remove regiões mal alinhadas internas, não apenas as extremidades.
+
+No PHYLUCE, isso não acontece automaticamente.
+É feito externamente, com ferramentas como:
+
+Gblocks
+
+TrimAl
+
+ClipKit
+
+Por que o exemplo chama isso de “internal trimming”?
+
+No tutorial, o termo aparece assim porque:
+
+--no-trim
+--output-format fasta
+
+
+Isso desliga o edge trimming, produzindo alinhamentos “crus” para:
+
+posterior poda interna (ex.: Gblocks)
+
+comparação direta edge vs internal trimming
+
+O PHYLUCE não faz internal trimming aqui — ele apenas prepara os alinhamentos.
+
+Resumo conceitual (para slide ou texto)
+
+Edge trimming remove regiões problemáticas nas extremidades dos alinhamentos, controlando ruído causado por gaps e comprimentos desiguais.
+Internal trimming remove regiões mal alinhadas internas e deve ser feito com ferramentas específicas (Gblocks, TrimAl, ClipKit).
+Em PHYLUCE, edge trimming é automático; internal trimming é uma etapa posterior e opcional.
+
+Boas práticas (recomendado)
+
+Use edge trimming sempre
+
+Aplique internal trimming leve (ex.: Gblocks permissivo ou ClipKit)
+
+Compare resultados:
+
+edge only
+
+edge + internal
+
+Avalie impacto em:
+
+número de loci
+
+ocupância
+
+estabilidade topológica
 
 ## Poda interna com Gblocks
 
