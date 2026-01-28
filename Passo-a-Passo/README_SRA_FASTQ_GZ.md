@@ -594,7 +594,7 @@ Titanidiops_sp
 Vamos para um novo diretório de trabalho
 
 ```
-mkdir ~/uce_treinamento/taxon-set/all
+mkdir -p ~/uce_treinamento/taxon-set/all
 ```
 
 Vamos para a contagem
