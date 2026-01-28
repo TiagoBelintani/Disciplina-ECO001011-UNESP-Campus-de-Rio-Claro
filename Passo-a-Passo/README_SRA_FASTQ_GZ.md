@@ -434,7 +434,7 @@ rm -rf clean-fastq/SRR*
 
 Isso limpa a bagunça sem risco.
 ---
-## Montagem dos Dados com SPAdes
+## Montagem dos Dados com Velvet
 
 
 <div align="justify">
