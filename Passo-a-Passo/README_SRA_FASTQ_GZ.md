@@ -1455,3 +1455,6 @@ Para datasets grandes, reduza:
 Tiago Belintani 2026 - *Brave the sun*
 
 
+https://mega.nz/folder/QZw3UDpS#RUrixhvQf09ii8ewivVLWg
+
+
