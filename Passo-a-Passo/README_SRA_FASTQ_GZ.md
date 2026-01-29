@@ -957,13 +957,25 @@ phyluce_align_get_gblocks_trimmed_alignments_from_untrimmed   --alignments taxon
 ```
 
 Limpar cabeçalhos:
-
+ Versões recentes do Phyluce
+ 
 ```bash
  phyluce_align_remove_locus_name_from_files  \
     --alignments mafft-gblocks \
     --output-format fasta  \
      --output mafft-gblocks-clean
 ```
+Versões anteriores
+*Importante* os dados --alignments precisam estar no formarto nexus 
+
+```bash
+phyluce_align_remove_locus_name_from_files \
+  --alignments mafft-gblocks \
+  --output mafft-gblocks-clean \
+  --input-format nexus \
+  --output-format fasta
+```
+
 O que faz:
 Remove regiões mal alinhadas ou excessivamente variáveis dentro de cada locus.
 
@@ -1002,7 +1014,7 @@ phyluce_align_get_only_loci_with_min_taxa  \
         --percent 0.50  --output 50p```
 
 ---
-
+```
 ## Gene trees (IQ-TREE 3, local)
 
 Primeiro vamos instalar a ferramenta
