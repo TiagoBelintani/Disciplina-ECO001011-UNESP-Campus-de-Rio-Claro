@@ -1295,14 +1295,17 @@ cd 50p
 E concatenar todos os .treefile em unico arquivo:
 
 ```bash
-cat /*.treefile > genes.tree
+cat *.treefile > genes.tree
 ```
 
+Colapsar ramos incertos
 
 ```bash
 nw_ed genes.tree 'i & b<=10' o > pruned.tree
 ```
+
 O que acontece com a árvore?
+
 Antes:
 <pre>
         ┌── A
@@ -1363,19 +1366,68 @@ Representar isso como politomia é estatisticamente correto.”
 astral4 -i pruned.tree -o species.tree -t 4 -u 1
 ```
 
+Vamos olhar rapidamente para arvore:
+
+```
+nw_display species.tree
+```
+
+Vamos enraizar:
+
+```bash
+nw_reroot species.tree Moggridgea_crudeni > species.rerooted.tre
 ```
 
 ---
 
 ## Concatenado (IQ-TREE 3)
 
-```bash
-phyluce_align_concatenate_alignments   --alignments taxon-set/all/75p   --output taxon-set/all/concat   --phylip
-```
+Análise concatenada consiste em unir múltiplos loci em uma única supermatriz e inferir uma única árvore filogenética, assumindo que todos os genes compartilham a mesma história evolutiva. Essa abordagem maximiza a quantidade de dados e tende a produzir árvores bem resolvidas, mas pode mascarar conflitos entre genes causados por processos como sorteio incompleto de linhagens ou introgressão.
+
+Primeiro vamos concatenar as matrizes inicias (50% de ocupância)
 
 ```bash
-iqtree3 -s taxon-set/all/concat.phylip   -m MFP+MERGE   -bb 1000   -alrt 1000   -nt AUTO
+phyluce_align_concatenate_alignments \
+  --alignments 50p \
+  --input-format fasta \
+  --output concatenado_50p \
+  --phylip
 ```
+
+Agora acessamos a nova pasta e verificamos os arquivos
+
+```bash
+cd 50p
+```
+
+Listamos
+
+```bash
+ls
+```
+
+Agora precisamos editar o arquivo com as partições para o Iqtree
+
+Para isso vamos utilizar um script personalizado
+
+```bash
+https://github.com/TiagoBelintani/Charset-converter-for-IQ-TREE-/tree/main
+```
+Execução:
+
+```bash
+python fix_charsets.py concatenado_50p.charsets
+```
+Isso gera um novo arquivo concatenado_50p_iqtree.charsets adequado para o Iqtree
+
+Vamos executar a inferência.
+
+```bash
+iqtree3 -s concatenado_50p.phylip \
+  -p concatenado_50p_iqtree.charsets \
+  -m GTR  -B 1000   -alrt 1000 -nt AUTO --redo --prefix concatenado_50p_iqtree
+```
+
 
 ---
 
