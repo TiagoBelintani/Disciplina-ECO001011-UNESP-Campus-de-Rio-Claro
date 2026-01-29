@@ -1151,10 +1151,30 @@ done
 
 ## Species tree (ASTRAL local)
 
+
+Instalar o programa 
+
 ```bash
-cat taxon-set/all/75p/*.treefile > genes.tree
+conda install aster
+```
+Tambem vamos precisar do newick utils
+
+```bash
+conda install bioconda::newick_utils
+```
+
+```bash
+cat /*.treefile > genes.tree
+```
+
+```bash
 nw_ed genes.tree 'i & b<=10' o > pruned.tree
-astral4 -i pruned.tree -o species.tree
+```
+
+```bash
+astral4 -i pruned.tree -o species.tree -t 4 -u 1
+```
+
 ```
 
 ---
