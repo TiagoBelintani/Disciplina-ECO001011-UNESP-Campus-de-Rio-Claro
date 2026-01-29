@@ -1015,14 +1015,14 @@ LEGENDA ÚNICA (fixa)
 100% de ocupância (matriz completa)
 
 Todos os táxons têm todos os loci
-
+<pre>
 Táxons ↓   L1 L2 L3 L4 L5
 A          ■  ■  ■  ■  ■
 B          ■  ■  ■  ■  ■
 C          ■  ■  ■  ■  ■
 D          ■  ■  ■  ■  ■
 E          ■  ■  ■  ■  ■
-
+</pre>
 
 Visualmente cheia
 Máximo compartilhamento de dados
@@ -1031,6 +1031,7 @@ Máximo compartilhamento de dados
 75% de ocupância
 
 Alguns buracos, mas ainda muito compartilhamento
+
 <pre>
 Táxons ↓   L1 L2 L3 L4 L5
 A          ■  ■  ■  ■  ■
@@ -1048,13 +1049,14 @@ Muito usado em filogenômica
 
 Metade da matriz é dado real
 
+<pre>
 Táxons ↓   L1 L2 L3 L4 L5
 A          ■  ■  ■  □  □
 B          ■  ■  □  □  □
 C          ■  ■  □  □  □
 D          ■  □  □  □  □
 E          ■  □  □  □  □
-
+</pre>
 
 Visualmente “quebrada”
 Menos loci, mais consistentes
@@ -1064,13 +1066,14 @@ Padrão comum em UCE / AHE
 
 A maioria dos loci não é compartilhada
 
+<pre>
 Táxons ↓   L1 L2 L3 L4 L5
 A          ■  ■  □  □  □
 B          ■  □  □  □  □
 C          ■  □  □  □  □
 D          □  □  □  □  □
 E          □  □  □  □  □
-
+</pre>
 
 Visualmente “vazia”
 Pouca informação comum
@@ -1299,7 +1302,73 @@ cat /*.treefile > genes.tree
 ```bash
 nw_ed genes.tree 'i & b<=10' o > pruned.tree
 ```
+O que acontece com a árvore?
+Antes:
+        ┌── A
+    ┌───┤(5)
+    │   └── B
+────┤
+    │   ┌── C
+    └───┤(90)
+        └── D
 
+Depois do comando:
+        ┌── A
+        └── B
+────┤
+    │   ┌── C
+    └───┤
+        └── D
+
+
+👉 O ramo com bootstrap = 5 foi colapsado
+👉 A politomia representa incerteza real
+
+POR QUE FAZER ISSO? (conceito filogenético)
+1️⃣ Árvores gênicas são ruidosas
+
+Muitas contêm ramos mal suportados
+
+Esses ramos não representam sinal evolutivo confiável
+
+2️⃣ Métodos MSC (ASTRAL, etc.) assumem que:
+
+Topologias mal resolvidas devem ser tratadas como incerteza
+
+Não como eventos evolutivos reais
+
+3️⃣ Ramos fracos causam problemas sérios
+
+Inflam discordância artificial
+
+Pioram:
+
+quartet scores
+
+estimativa de ramos
+
+estabilidade da árvore de espécies
+
+4️⃣ Colapsar ≠ perder informação
+
+É o contrário:
+
+“Um ramo com suporte ≤10 não carrega informação confiável
+Representar isso como politomia é estatisticamente correto.”
+
+Quando esse comando é usado na prática?
+Muito comum em pipelines com:
+
+ASTRAL / wASTRAL
+
+UFBoot / bootstrap clássico
+
+Centenas ou milhares de genes
+
+Exemplo típico:
+
+nw_ed gene.tre 'i & b<=10' o > gene.collapsed.tre
+astral -i gene.collapsed.tre -o species.tre
 ```bash
 astral4 -i pruned.tree -o species.tree -t 4 -u 1
 ```
