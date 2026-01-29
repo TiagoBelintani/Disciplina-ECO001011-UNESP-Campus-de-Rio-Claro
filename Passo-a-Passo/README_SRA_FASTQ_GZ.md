@@ -1004,6 +1004,79 @@ Loci moderadamente incompletos são mantidos
 
 A decisão de qual ocupância é melhor para seus dados e um decisão técnica para seus dados.
 
+Exemplo:
+
+```bash
+LEGENDA ÚNICA (fixa)
+■ = dado presente
+□ = dado ausente
+```
+
+100% de ocupância (matriz completa)
+
+Todos os táxons têm todos os loci
+
+Táxons ↓   L1 L2 L3 L4 L5
+A          ■  ■  ■  ■  ■
+B          ■  ■  ■  ■  ■
+C          ■  ■  ■  ■  ■
+D          ■  ■  ■  ■  ■
+E          ■  ■  ■  ■  ■
+
+
+Visualmente cheia
+Máximo compartilhamento de dados
+Árvore estável
+
+75% de ocupância
+
+Alguns buracos, mas ainda muito compartilhamento
+
+Táxons ↓   L1 L2 L3 L4 L5
+A          ■  ■  ■  ■  ■
+B          ■  ■  ■  ■  □
+C          ■  ■  ■  □  □
+D          ■  ■  ■  □  □
+E          ■  ■  □  □  □
+
+
+Ainda “verde”
+Bom compromisso genes × táxons
+Muito usado em filogenômica
+
+50% de ocupância (clássico)
+
+Metade da matriz é dado real
+
+Táxons ↓   L1 L2 L3 L4 L5
+A          ■  ■  ■  □  □
+B          ■  ■  □  □  □
+C          ■  ■  □  □  □
+D          ■  □  □  □  □
+E          ■  □  □  □  □
+
+
+Visualmente “quebrada”
+Menos loci, mais consistentes
+Padrão comum em UCE / AHE
+
+25% de ocupância (matriz esparsa)
+
+A maioria dos loci não é compartilhada
+
+Táxons ↓   L1 L2 L3 L4 L5
+A          ■  ■  □  □  □
+B          ■  □  □  □  □
+C          ■  □  □  □  □
+D          □  □  □  □  □
+E          □  □  □  □  □
+
+
+Visualmente “vazia”
+Pouca informação comum
+Relações instáveis
+
+
 No phyluce podemos selecionar matrizes filtrando por ocupância utilizando phyluce_align_get_only_loci_with_min_taxa:
 
 ```bash
@@ -1207,9 +1280,21 @@ Tambem vamos precisar do newick utils
 conda install bioconda::newick_utils
 ```
 
+
+Execução 
+
+Vamos acessar o diretorio com as filogenias
+
+```bash
+cd 50p
+```
+
+E concatenar todos os .treefile em unico arquivo:
+
 ```bash
 cat /*.treefile > genes.tree
 ```
+
 
 ```bash
 nw_ed genes.tree 'i & b<=10' o > pruned.tree
