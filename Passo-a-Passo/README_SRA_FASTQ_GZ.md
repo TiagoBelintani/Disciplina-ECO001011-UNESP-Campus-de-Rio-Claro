@@ -1331,6 +1331,7 @@ Depois do comando:
  A politomia representa incerteza real
 
 POR QUE FAZER ISSO? (conceito filogenético)
+
 1️ Árvores gênicas são ruidosas
 
 Muitas contêm ramos mal suportados
@@ -1453,10 +1454,4 @@ Para datasets grandes, reduza:
 
 Tiago Belintani 2026 - *Brave the sun*
 
-
-
-link
-
-https://mega.nz/folder/xUhjwaxS#wR_jC90uC1fhAUYEdeDpFA
-  
 
