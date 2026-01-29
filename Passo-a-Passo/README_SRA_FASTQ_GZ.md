@@ -1031,14 +1031,14 @@ Máximo compartilhamento de dados
 75% de ocupância
 
 Alguns buracos, mas ainda muito compartilhamento
-
+<pre>
 Táxons ↓   L1 L2 L3 L4 L5
 A          ■  ■  ■  ■  ■
 B          ■  ■  ■  ■  □
 C          ■  ■  ■  □  □
 D          ■  ■  ■  □  □
 E          ■  ■  □  □  □
-
+</pre>
 
 Ainda “verde”
 Bom compromisso genes × táxons
