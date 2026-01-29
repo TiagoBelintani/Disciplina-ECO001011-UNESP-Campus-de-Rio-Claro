@@ -959,7 +959,10 @@ phyluce_align_get_gblocks_trimmed_alignments_from_untrimmed   --alignments taxon
 Limpar cabeçalhos:
 
 ```bash
-phyluce_align_remove_locus_name_from_files   --alignments taxon-set/all/mafft-gblocks   --output taxon-set/all/mafft-gblocks-clean
+ phyluce_align_remove_locus_name_from_files  \
+    --alignments mafft-gblocks \
+    --output-format fasta  \
+     --output mafft-gblocks-clean
 ```
 O que faz:
 Remove regiões mal alinhadas ou excessivamente variáveis dentro de cada locus.
@@ -969,19 +972,178 @@ Reduz ruído filogenético e melhora a qualidade do sinal, especialmente em regi
 
 ---
 
-## Matrizes por ocupância (ex.: 75%)
+## Matrizes por ocupância (ex.: 50%)
+
+O que é ocupância?
+
+A ocupância mede a proporção de táxons que possuem dados válidos em um determinado locus.
+
+100% de ocupância → todos os táxons têm sequência naquele locus
+
+50% de ocupância → pelo menos metade dos táxons tem sequência naquele locus
+
+Matriz com 50% de ocupância
+
+Uma matriz 50% inclui apenas loci que estão presentes em ≥ 50% dos táxons.
+
+Loci muito raros (presentes em poucos táxons) são excluídos
+
+Loci moderadamente incompletos são mantidos
+
+A decisão de qual ocupância é melhor para seus dados e um decisão técnica para seus dados.
+
+No phyluce podemos selecionar matrizes filtrando por ocupância utilizando phyluce_align_get_only_loci_with_min_taxa:
 
 ```bash
-phyluce_align_get_only_loci_with_min_taxa   --alignments taxon-set/all/mafft-gblocks-clean   --taxa 10   --percent 0.75   --output taxon-set/all/75p
-```
+phyluce_align_get_only_loci_with_min_taxa  \
+     --input-format fasta  \
+     --taxa 16  \
+     --alignments mafft-gblocks-clean  \
+        --percent 0.50  --output 50p```
 
 ---
 
 ## Gene trees (IQ-TREE 3, local)
 
+Primeiro vamos instalar a ferramenta
+
 ```bash
-for aln in taxon-set/all/75p/*.fasta; do
-  iqtree3 -s $aln -m MFP -bb 1000 -alrt 1000 -nt 4
+conda install bioconda::iqtree
+```
+Testar a instalação
+
+```bash
+iqtree3 -h
+```
+Explicação dos parâmetros
+
+```bash
+for aln in 50p/*.fasta; do ... done
+```
+
+Itera sobre todos os alinhamentos individuais da matriz 50%.
+
+Cada arquivo .fasta representa um locus.
+
+Resultado: uma árvore por locus, ideal para análises coalescentes (ASTRAL, wASTRAL).
+
+iqtree3
+
+Chamada do IQ-TREE versão 3.
+
+Versão moderna, mais rápida e estável, com melhor paralelização e suporte.
+
+-s $aln
+
+Define o arquivo de alinhamento de entrada.
+
+Cada execução usa um locus independente.
+
+Essencial para gerar árvores gênicas não concatenadas.
+
+```bash
+-m GTR
+```
+
+Define explicitamente o modelo evolutivo GTR (General Time Reversible).
+
+Permite:
+
+Taxas de substituição diferentes entre todos os pares de nucleotídeos
+
+Frequências de bases livres
+
+Implicações importantes:
+
+✔ Modelo flexível e amplamente aceito
+
+Não testa ajuste do modelo (nenhum model selection)
+
+Em datasets grandes (UCE/AHE), GTR costuma ser um modelo seguro, mas pode ser computacionalmente pesado.
+
+```bash
+-B 1000
+```
+
+Executa 1000 réplicas de Ultrafast Bootstrap (UFBoot).
+
+Mede suporte estatístico dos ramos.
+
+Características do UFBoot:
+
+Muito mais rápido que bootstrap clássico
+
+Pode inflar suporte se o modelo for inadequado ou o alinhamento for ruidoso
+
+Regra prática:
+```bash
+UFBoot ≥ 95 → suporte forte
+
+80–94 → moderado
+
+< 80 → fraco
+```
+
+```bash
+-alrt 1000
+```
+Executa 1000 réplicas de SH-aLRT (Shimodaira–Hasegawa approximate Likelihood Ratio Test).
+
+Teste independente do bootstrap, baseado em verossimilhança local.
+
+Interpretação:
+
+SH-aLRT ≥ 80 → bom suporte
+
+Mais sensível a sinal local do alinhamento
+
+Uso combinado: -B 1000 -alrt 1000
+
+Boa prática moderna:
+
+UFBoot → estabilidade global
+
+SH-aLRT → evidência local de verossimilhança
+
+Ramos com alto suporte em ambos são os mais confiáveis.
+
+```bash
+-nt 4
+```
+
+Usa 4 threads (CPUs) por execução.
+
+Importante em loops:
+
+Evita sobrecarregar a máquina
+
+Permite paralelismo controlado
+
+Em clusters, esse valor deve bater com --cpus-per-task do SLURM.
+
+O que esse comando produz
+
+Para cada locus:
+
+```bash
+Arquivo .treefile → árvore ML final
+
+Arquivo .log → detalhes da execução
+
+Arquivo .iqtree → estatísticas e parâmetros
+```
+
+Suportes nos ramos no formato:
+
+SH-aLRT / UFBoot
+
+Essas árvores são entrada direta para ASTRAL / wASTRAL.
+
+Execução: 
+
+```bash
+for aln in 50p/*.fasta; do
+  iqtree3 -s $aln -m GTR -B 1000 -alrt 1000 -nt 4
 done
 ```
 
