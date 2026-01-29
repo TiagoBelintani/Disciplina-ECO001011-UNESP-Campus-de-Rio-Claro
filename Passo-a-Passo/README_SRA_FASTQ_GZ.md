@@ -1304,6 +1304,7 @@ nw_ed genes.tree 'i & b<=10' o > pruned.tree
 ```
 O que acontece com a árvore?
 Antes:
+<pre>
         ┌── A
     ┌───┤(5)
     │   └── B
@@ -1311,33 +1312,35 @@ Antes:
     │   ┌── C
     └───┤(90)
         └── D
+</pre>
 
 Depois do comando:
+<pre>
         ┌── A
         └── B
 ────┤
     │   ┌── C
     └───┤
         └── D
+</pre>
 
-
-👉 O ramo com bootstrap = 5 foi colapsado
-👉 A politomia representa incerteza real
+ O ramo com bootstrap = 5 foi colapsado
+ A politomia representa incerteza real
 
 POR QUE FAZER ISSO? (conceito filogenético)
-1️⃣ Árvores gênicas são ruidosas
+1️ Árvores gênicas são ruidosas
 
 Muitas contêm ramos mal suportados
 
 Esses ramos não representam sinal evolutivo confiável
 
-2️⃣ Métodos MSC (ASTRAL, etc.) assumem que:
+2️ Métodos MSC (ASTRAL, etc.) assumem que:
 
 Topologias mal resolvidas devem ser tratadas como incerteza
 
 Não como eventos evolutivos reais
 
-3️⃣ Ramos fracos causam problemas sérios
+3️ Ramos fracos causam problemas sérios
 
 Inflam discordância artificial
 
@@ -1349,26 +1352,13 @@ estimativa de ramos
 
 estabilidade da árvore de espécies
 
-4️⃣ Colapsar ≠ perder informação
+4️ Colapsar ≠ perder informação
 
 É o contrário:
 
 “Um ramo com suporte ≤10 não carrega informação confiável
 Representar isso como politomia é estatisticamente correto.”
 
-Quando esse comando é usado na prática?
-Muito comum em pipelines com:
-
-ASTRAL / wASTRAL
-
-UFBoot / bootstrap clássico
-
-Centenas ou milhares de genes
-
-Exemplo típico:
-
-nw_ed gene.tre 'i & b<=10' o > gene.collapsed.tre
-astral -i gene.collapsed.tre -o species.tre
 ```bash
 astral4 -i pruned.tree -o species.tree -t 4 -u 1
 ```
