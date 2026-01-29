@@ -1163,6 +1163,38 @@ done
 
 ## Species tree (ASTRAL local)
 
+Accurate Species Tree EstimatoR (ASTER❋) Estimador Preciso de Árvores de Espécies (ASTER❋)
+https://github.com/chaoszhang/ASTER 
+
+
+Uma família de algoritmos de otimização para inferência de árvores filogenéticas:
+
+ASTRAL-IV
+(a partir de topologias de árvores gênicas não enraizadas, com o CASTLES-II integrado para estimativa de comprimentos de ramos)
+
+ASTRAL-Pro3
+(a partir de topologias de árvores de famílias gênicas não enraizadas, com CASTLES-Pro integrado)
+
+Weighted ASTRAL
+(a partir de árvores gênicas não enraizadas com comprimentos de ramos e/ou valores de suporte)
+
+CASTER-site
+(a partir de alinhamentos de genomas completos ou sequências alinhadas)
+
+CASTER-pair
+(a partir de alinhamentos de genomas completos ou sequências alinhadas)
+
+WASTER
+(a partir de leituras brutas de sequenciamento)
+
+SISTER
+(a partir de dados de distância do tipo optical map ou dados de forma)
+
+Estatística D*
+(detecção de hibridização interespecífica)
+
+**Hoje vamos trabalhar com ASTRAL-IV:**
+
 
 Instalar o programa 
 
