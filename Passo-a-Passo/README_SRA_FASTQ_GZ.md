@@ -1395,10 +1395,26 @@ phyluce_align_concatenate_alignments \
   --phylip
 ```
 
+Opcional - Usando AMAS 
+
+```bash
+conda install bioconda::amas
+```
+```bash 
+AMAS.py concat \
+  -i 50p/*.fasta \
+  -f fasta \
+  -d dna \
+  -u phylip \
+  -y raxml \
+  -t concatenado_50p/supermatrix.phy \
+  -p concatenado_50p/supermatrix.partitions
+```
+
 Agora acessamos a nova pasta e verificamos os arquivos
 
 ```bash
-cd 50p
+cd concatenado_50p
 ```
 
 Listamos
@@ -1407,7 +1423,7 @@ Listamos
 ls
 ```
 
-Agora precisamos editar o arquivo com as partições para o Iqtree
+Agora precisamos editar o arquivo com as partições para o Iqtree (resultado Phyluce para AMAS prosseguir para o iqtree3)
 
 Para isso vamos utilizar um script personalizado
 
@@ -1423,14 +1439,116 @@ Isso gera um novo arquivo concatenado_50p_iqtree.charsets adequado para o Iqtree
 
 Vamos executar a inferência.
 
+Phyluce
+
 ```bash
 iqtree3 -s concatenado_50p.phylip \
   -p concatenado_50p_iqtree.charsets \
   -m GTR  -B 1000   -alrt 1000 -nt AUTO --redo --prefix concatenado_50p_iqtree
 ```
+Amas
+```bash
+iqtree3 -s supermatrix.phy \
+  -p supermatrix.partitions \
+  -m GTR  -B 1000   -alrt 1000 -nt AUTO --redo --prefix concatenado_50p_iqtree
+```
 
+Agora vamos analisar a arvore 
+
+```bash
+nw_display *.treefile
+```
+Enraizar
+
+```bash
+nw_reroot *.treefile Moggridgea_crudeni > concat_reroot.tree
+```
+
+Analisar
+```bash
+nw_display *.tree
+```
 
 ---
+
+## Analise de conflito 
+
+Vamos analisar os confiltos entre a arvore de espécie e concatenada usando o Iqtree3
+
+Vamos gerar um diretorio novo, copiar as arvores e analisar
+
+Primeiro 
+
+```bash
+mkdir estimativa_conflito
+```
+
+```bash
+cp 50p/genes.tree estimativa_conflito
+
+cp 50p/species.reroot.tree estimativa_conflito
+
+cp concatenado_50p/concatenado_50p_iqtree.charsets estimativa_conflito
+
+cp concatenado_50p/concatenado_50p.phylip estimativa_conflito
+```
+
+Aplicar o teste
+
+```bash
+ iqtree3 \
+  -s concatenado_50p.phylip \
+  -q concatenado_50p_iqtree.charsets \
+  -t species.reroot.tree \
+  --gcf genes.tree \
+  --scf 1000 \
+  -pre astral_gcf_scf
+```
+
+**O que estou fazendo com este script?**
+
+Este script usa o IQ-TREE para avaliar conflitos filogenéticos entre diferentes fontes de informação evolutiva.
+
+Nós já temos:
+
+uma árvore de espécies inferida pelo ASTRAL (modelo coalescente),
+
+e uma supermatriz concatenada de muitos loci.
+
+O objetivo aqui não é inferir uma nova árvore, mas medir o quanto os dados realmente concordam ou discordam com a árvore de espécies.
+
+Qual é a ideia central?
+
+Quando usamos muitos genes:
+
+genes diferentes podem contar histórias diferentes,
+
+especialmente por processos como sorteio incompleto de linhagens (ILS).
+
+Este script responde à pergunta:
+
+Quantos genes e quantos sítios realmente apoiam cada ramo da árvore?
+
+--- 
+
+O que o IQ-TREE calcula aqui?
+
+Para cada ramo da árvore ASTRAL, o IQ-TREE calcula dois tipos de suporte:
+
+1️⃣ gCF – Gene Concordance Factor
+
+Proporção de genes cuja árvore concorda com aquele ramo.
+
+gCF baixo indica discordância entre genes, mesmo que o ramo exista na árvore final.
+
+2️⃣ sCF – Site Concordance Factor
+
+Proporção de sítios (posições do alinhamento) que apoiam aquele ramo.
+
+sCF baixo indica que o suporte está diluído em muitos loci, típico de dados genômicos.
+
+
+
 
 ## Bayesiano (MrBayes, local)
 
