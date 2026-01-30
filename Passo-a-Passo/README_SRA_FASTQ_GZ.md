@@ -1670,7 +1670,21 @@ Exemplos:
 
 38.63
 
+Interpretação crítica:
 
+q₁ ≈ q₂ + q₃
+
+O ASTRAL está forçando uma bifurcação
+
+Esses nós são estatisticamente fracos
+
+Biologicamente:
+
+provável radiação rápida
+
+possível polifilia real não resolvível
+
+ou dados insuficientes para esse nível
 
 
 
