@@ -2,32 +2,32 @@
  
  **Versão LOCAL (Linux / macOS / WSL)**  
 
-- [Visão geral do fluxo](#visão-geral-do-fluxo)
+- [Visão geral do fluxo](#visao-geral-do-fluxo)
 - [Requisitos](#requisitos)
 - [Ambientes Conda](#ambientes-conda)
-- [Estrutura de diretórios](#estrutura-de-diretórios)
+- [Estrutura de diretórios](#estrutura-de-diretorios)
 - [Acesso aos dados (NCBI SRA)](#acesso-aos-dados-ncbi-sra)
-- [Verificação de Integridade e Quantificação](#verificação-de-integridade-e-quantificação)
+- [Verificação de integridade e quantificação](#verificacao-de-integridade-e-quantificacao)
 - [Limpeza com Trim Galore (local)](#limpeza-com-trim-galore-local)
-- [Primeira Opção - Trimgalore](#primeira-opção---trimgalore)
-- [Segunda Opção - Trimmomatic](#segunda-opção---trimmomatic)
-- [Montagem dos dados "trimados"](#montagem-dos-dados-trimados)
-- [Montagem dos Dados com Velvet](#montagem-dos-dados-com-velvet)
-- [Passos Práticos](#passos-práticos)
-- [Preparar o Arquivo de Configuração](#1-preparar-o-arquivo-de-configuração)
-- [Identificação de loci UCE](#identificação-de-loci-uce)
-- [Extração de loci](#extração-de-loci)
-- [Explodindo o FASTA monolítico](#Explodindo-o-FASTA-monolítico)
+- [Primeira opção – Trim Galore](#primeira-opcao--trim-galore)
+- [Segunda opção – Trimmomatic](#segunda-opcao--trimmomatic)
+- [Montagem dos dados trimados](#montagem-dos-dados-trimados)
+- [Montagem dos dados com Velvet](#montagem-dos-dados-com-velvet)
+- [Passos práticos](#passos-praticos)
+- [Preparar o arquivo de configuração](#preparar-o-arquivo-de-configuracao)
+- [Identificação de loci UCE](#identificacao-de-loci-uce)
+- [Extração de loci](#extracao-de-loci)
+- [Explodindo o FASTA monolítico](#explodindo-o-fasta-monolitico)
 - [Alinhamento (MAFFT)](#alinhamento-mafft)
-- [Edge trimming vs Internal trimming no PHYLUCE](#Edge-trimming-vs-Internal-trimming-no-PHYLUCE)
+- [Edge trimming vs internal trimming no PHYLUCE](#edge-trimming-vs-internal-trimming-no-phyluce)
 - [Poda interna com Gblocks](#poda-interna-com-gblocks)
-- [Matrizes por ocupância (ex.: 75%)](#matrizes-por-ocupância-ex-75)
+- [Matrizes por ocupância (ex.: 50%)](#matrizes-por-ocupancia-ex-50)
 - [Gene trees (IQ-TREE 3, local)](#gene-trees-iq-tree-3-local)
-- [Species tree (ASTRAL local)](#species-tree-astral-local)
+- [Species tree (ASTRAL, local)](#species-tree-astral-local)
 - [Concatenado (IQ-TREE 3)](#concatenado-iq-tree-3)
-- [Bayesiano (MrBayes, local)](#bayesiano-mrbayes-local)
-- [Observação final](#observação-final)
-- [Referências](#referências)
+- [Análise de conflito (gCF / sCF)](#analise-de-conflito-gcf--scf)
+- [Interpretação da árvore de espécies (ASTRAL)](#interpretacao-da-arvore-de-especies-astral)
+- [Referências](#referencias)
 
 **Execução Local**
 
@@ -1610,81 +1610,91 @@ Valor no ramo	Interpretação
 ≈ 0.33	Politomia (pouco sinal)
 < 0.33	Conflito forte / erro
 ```
-NTERPRETAÇÃO DA SUA ÁRVORE (FIGURA MOSTRADA)
+# Interpretação da Árvore de Espécies (ASTRAL)
 
-1️ Clados profundos (base da árvore)
+Este guia descreve como interpretar os valores de **suporte por quartetos** exibidos na árvore de espécies inferida com **ASTRAL**, conforme a figura apresentada.
 
-Você tem vários nós com 100.
+Os valores indicam a **proporção de quartetos gênicos** que apoiam a topologia principal de cada nó, sob o **Modelo de Coalescência Multiespécies (MSC)**.
 
-Interpretação:
+---
 
-Forte concordância entre gene trees
+## 1. Clados Profundos (Base da Árvore)
 
-Backbone bem resolvido
+### Observação
+- Diversos nós apresentam **suporte = 100**
 
-Topologia robusta sob MSC
+### Interpretação
+- Forte concordância entre as *gene trees*
+- Backbone filogenético bem resolvido
+- Topologia altamente robusta sob o MSC
 
-Esses nós são âncoras filogenéticas confiáveis.
+### Implicação Biológica
+Esses nós representam **âncoras filogenéticas confiáveis**, indicando que a relação entre os grandes clados é estável e pouco afetada por discordância gênica.
 
-2️ Nós intermediários (~50–60)
+---
 
-Exemplos visíveis:
+## 2. Nós Intermediários (Suporte ~50–60)
 
-50
+### Exemplos observados
+- 50  
+- 59.58  
+- 58.16  
+- 51.07  
+- 52.20  
 
-59.58
+### Interpretação
+- Aproximadamente metade dos quartetos apoia a topologia principal
+- A outra metade está distribuída entre topologias alternativas
+- Presença de **sinal filogenético real**, porém **conflitante**
 
-58.16
+### Importante
+Esses valores **não invalidam o clado**, mas indicam que a relação não é unanimemente suportada pelas árvores gênicas.
 
-51.07
+### Possíveis causas
+- *Incomplete Lineage Sorting* (ILS)
+- Divergências rápidas entre linhagens
+- Mistura de histórias evolutivas entre genes
 
-52.2
+---
 
-Interpretação:
+## 3. Nós com Suporte Baixo (30–40)
 
-Aproximadamente metade dos quartetos apoia essa resolução
+### Exemplos observados
+- 40.14  
+- 35.89  
+- 39.00  
+- 35.13  
+- 38.63  
 
-A outra metade apoia alternativas
+### Interpretação Estatística
+- Distribuição aproximadamente equivalente entre topologias alternativas  
+  *(q₁ ≈ q₂ + q₃)*
+- O ASTRAL é forçado a resolver uma **bifurcação pouco sustentada**
+- Esses nós são **estatisticamente fracos**
 
-Sinal real, mas conflitante
+### Interpretação Biológica
+Esses padrões são compatíveis com:
+- Radiações rápidas
+- Relações potencialmente **não bifurcantes**
+- Polifilia real em escala genômica
+- Dados insuficientes para resolver esse nível da árvore
 
-Isso NÃO invalida o clado, mas indica:
+### Atenção
+Esses nós devem ser interpretados com cautela e **não devem ser usados isoladamente** como evidência forte de relacionamento evolutivo.
 
-ILS
+---
 
-divergências rápidas
+## Considerações Gerais
 
-ou mistura de histórias gênicas
+- Suporte alto por quartetos indica **consenso genômico**
+- Suporte intermediário reflete **conflito biológico esperado**, não erro
+- Suporte baixo sugere **limite de resolução do conjunto de dados**
+- Árvores de espécies sob o MSC descrevem **histórias médias**, não verdades absolutas
 
-3️ Nós com suporte baixo (30–40)
+---
 
-Exemplos:
-
-40.14
-
-35.89
-
-39
-
-35.13
-
-38.63
-
-Interpretação crítica:
-
-q₁ ≈ q₂ + q₃
-
-O ASTRAL está forçando uma bifurcação
-
-Esses nós são estatisticamente fracos
-
-Biologicamente:
-
-provável radiação rápida
-
-possível polifilia real não resolvível
-
-ou dados insuficientes para esse nível
+**Tiago Belintani — 2026**  
+*Brave the sun*
 
 
 
