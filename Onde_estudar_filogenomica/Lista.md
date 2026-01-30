@@ -181,18 +181,6 @@ Canal com vídeos didáticos em diversas áreas da **biologia molecular e genét
 
 ---
 
-##  Observação Final
-
-A maioria dos **pipelines completos de filogenômica moderna** é disponibilizada em inglês.  
-No entanto, os materiais em português listados aqui são **excelentes portas de entrada**, especialmente quando combinados com **tutoriais técnicos oficiais**.
-
-Este repositório busca integrar:
-- explicação conceitual em português  
-- ferramentas e scripts internacionais  
-- pipelines reprodutíveis e modernos  
-
----
-
 **Tiago Belintani — 2026**  
 *Brave the sun*
 
