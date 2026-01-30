@@ -1088,8 +1088,21 @@ phyluce_align_get_only_loci_with_min_taxa  \
      --taxa 16  \
      --alignments mafft-gblocks-clean  \
         --percent 0.50  --output 50p```
-
+```
 ---
+
+## Baixar e instalar o Figtree (Visualizar arvores)
+
+
+```bash
+https://tree.bio.ed.ac.uk/software/figtree/
+```
+
+FigTree
+
+O FigTree foi projetado como um visualizador gráfico de árvores filogenéticas e como um programa para gerar figuras prontas para publicação. 
+
+
 ```
 ## Gene trees (IQ-TREE 3, local)
 
@@ -1098,6 +1111,7 @@ Primeiro vamos instalar a ferramenta
 ```bash
 conda install bioconda::iqtree
 ```
+
 Testar a instalação
 
 ```bash
@@ -1453,7 +1467,7 @@ iqtree3 -s supermatrix.phy \
   -m GTR  -B 1000   -alrt 1000 -nt AUTO --redo --prefix concatenado_50p_iqtree
 ```
 
-Agora vamos analisar a arvore 
+Agora vamos analisar a arvore  (no terminal depois no Figtree)
 
 ```bash
 nw_display *.treefile
@@ -1471,11 +1485,12 @@ nw_display *.tree
 
 ---
 
-## Analise de conflito 
+## Analise de conflito (Species tree x genes tree/ Concatenated based x Species tree)
+
 
 Vamos analisar os confiltos entre a arvore de espécie e concatenada usando o Iqtree3
 
-Vamos gerar um diretorio novo, copiar as arvores e analisar
+Vamos gerar um diretório novo, copiar as arvores e analisar
 
 Primeiro 
 
@@ -1491,6 +1506,7 @@ cp 50p/species.reroot.tree estimativa_conflito
 cp concatenado_50p/concatenado_50p_iqtree.charsets estimativa_conflito
 
 cp concatenado_50p/concatenado_50p.phylip estimativa_conflito
+
 ```
 
 Aplicar o teste
@@ -1548,13 +1564,139 @@ Proporção de sítios (posições do alinhamento) que apoiam aquele ramo.
 
 sCF baixo indica que o suporte está diluído em muitos loci, típico de dados genômicos.
 
+---
 
+Conflito conflito (Species tree x genes tree)
 
+Primeiro vamos calcular as estimativas de quartetos
 
+Para isso usaremos o Astral III
+No diretório de programas
+
+```bash
+git clone https://github.com/smirarab/ASTRAL.git
+```
+
+Vamos descompactar 
+
+```bash
+unzip ou zio
+```
+
+Chamar o programa
+```bash
+java -jar ~/uce_treinamento/programas/ASTRAL/Astral/astral.5.7.8.jar -h
+
+```bash
+java -jar ~/uce_treinamento/programas/ASTRAL/Astral/astral.5.7.8.jar \
+  -i genes.tree \
+  -o species.tree \
+  -t 1 \
+  --outgroup Moggridgea_crudeni
+```
+Vamos analisar no Figtree
+
+Como interpretar o número do ramo (regra prática)
+
+Use esta tabela diretamente na leitura da árvore:
+```bash
+Valor no ramo	Interpretação
+> 0.7	Ramo bem suportado
+0.5 – 0.7	Suporte moderado
+0.33 – 0.5	ILS elevado
+≈ 0.33	Politomia (pouco sinal)
+< 0.33	Conflito forte / erro
+```
+NTERPRETAÇÃO DA SUA ÁRVORE (FIGURA MOSTRADA)
+
+1️ Clados profundos (base da árvore)
+
+Você tem vários nós com 100.
+
+Interpretação:
+
+Forte concordância entre gene trees
+
+Backbone bem resolvido
+
+Topologia robusta sob MSC
+
+Esses nós são âncoras filogenéticas confiáveis.
+
+2️ Nós intermediários (~50–60)
+
+Exemplos visíveis:
+
+50
+
+59.58
+
+58.16
+
+51.07
+
+52.2
+
+Interpretação:
+
+Aproximadamente metade dos quartetos apoia essa resolução
+
+A outra metade apoia alternativas
+
+Sinal real, mas conflitante
+
+Isso NÃO invalida o clado, mas indica:
+
+ILS
+
+divergências rápidas
+
+ou mistura de histórias gênicas
+
+3️ Nós com suporte baixo (30–40)
+
+Exemplos:
+
+40.14
+
+35.89
+
+39
+
+35.13
+
+38.63
+
+Interpretação crítica:
+
+q₁ ≈ q₂ + q₃
+
+O ASTRAL está forçando uma bifurcação
+
+Esses nós são estatisticamente fracos
+
+Biologicamente:
+
+provável radiação rápida
+
+possível polifilia real não resolvível
+
+ou dados insuficientes para esse nível
+
+Esses nós devem ser tratados com cautela no texto.
+
+4️Casos extremos (<33) — não vejo no print
+
+Se houvesse:
+
+ASTRAL não distingue resolução
+
+Polytomia real seria a melhor interpretação
+
+---
 
 Tiago Belintani 2026 - *Brave the sun*
 
 
-https://mega.nz/folder/QZw3UDpS#RUrixhvQf09ii8ewivVLWg
 
 
