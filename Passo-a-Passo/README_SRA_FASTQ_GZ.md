@@ -1103,7 +1103,8 @@ FigTree
 O FigTree foi projetado como um visualizador gráfico de árvores filogenéticas e como um programa para gerar figuras prontas para publicação. 
 
 
-```
+---
+
 ## Gene trees (IQ-TREE 3, local)
 
 Primeiro vamos instalar a ferramenta
@@ -1117,6 +1118,7 @@ Testar a instalação
 ```bash
 iqtree3 -h
 ```
+
 Explicação dos parâmetros
 
 ```bash
@@ -1586,6 +1588,7 @@ unzip ou zio
 Chamar o programa
 ```bash
 java -jar ~/uce_treinamento/programas/ASTRAL/Astral/astral.5.7.8.jar -h
+```
 
 ```bash
 java -jar ~/uce_treinamento/programas/ASTRAL/Astral/astral.5.7.8.jar \
@@ -1667,31 +1670,11 @@ Exemplos:
 
 38.63
 
-Interpretação crítica:
 
-q₁ ≈ q₂ + q₃
 
-O ASTRAL está forçando uma bifurcação
 
-Esses nós são estatisticamente fracos
 
-Biologicamente:
 
-provável radiação rápida
-
-possível polifilia real não resolvível
-
-ou dados insuficientes para esse nível
-
-Esses nós devem ser tratados com cautela no texto.
-
-4️Casos extremos (<33) — não vejo no print
-
-Se houvesse:
-
-ASTRAL não distingue resolução
-
-Polytomia real seria a melhor interpretação
 
 ---
 
