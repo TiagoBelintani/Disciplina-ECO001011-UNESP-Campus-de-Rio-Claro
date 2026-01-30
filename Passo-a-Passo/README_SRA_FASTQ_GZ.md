@@ -1503,7 +1503,7 @@ mkdir estimativa_conflito
 ```bash
 cp 50p/genes.tree estimativa_conflito
 
-cp 50p/species.reroot.tree estimativa_conflito
+cp 50p/species.reroot.tre estimativa_conflito
 
 cp concatenado_50p/concatenado_50p_iqtree.charsets estimativa_conflito
 
@@ -1517,7 +1517,7 @@ Aplicar o teste
  iqtree3 \
   -s concatenado_50p.phylip \
   -q concatenado_50p_iqtree.charsets \
-  -t species.reroot.tree \
+  -t species.reroot.tre \
   --gcf genes.tree \
   --scf 1000 \
   -pre astral_gcf_scf
