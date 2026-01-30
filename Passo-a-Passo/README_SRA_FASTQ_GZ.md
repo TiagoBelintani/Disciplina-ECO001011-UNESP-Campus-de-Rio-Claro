@@ -1504,6 +1504,7 @@ Aplicar o teste
   --scf 1000 \
   -pre astral_gcf_scf
 ```
+---
 
 **O que estou fazendo com este script?**
 
@@ -1535,13 +1536,13 @@ O que o IQ-TREE calcula aqui?
 
 Para cada ramo da árvore ASTRAL, o IQ-TREE calcula dois tipos de suporte:
 
-1️⃣ gCF – Gene Concordance Factor
+1️ gCF – Gene Concordance Factor
 
 Proporção de genes cuja árvore concorda com aquele ramo.
 
 gCF baixo indica discordância entre genes, mesmo que o ramo exista na árvore final.
 
-2️⃣ sCF – Site Concordance Factor
+2️ sCF – Site Concordance Factor
 
 Proporção de sítios (posições do alinhamento) que apoiam aquele ramo.
 
@@ -1550,25 +1551,6 @@ sCF baixo indica que o suporte está diluído em muitos loci, típico de dados g
 
 
 
-## Bayesiano (MrBayes, local)
-
-```bash
-mb taxon-set/all/concat.nexus
-```
-
-Adicionar bloco `begin mrbayes;` conforme necessário.
-
----
-
-## Observação final
-
-Este tutorial é **100% executável localmente**, sem dependência de SLURM ou HPC.
-Para datasets grandes, reduza:
-- número de threads
-- percentuais de ocupância
-- número de réplicas de bootstrap
-
----
 
 Tiago Belintani 2026 - *Brave the sun*
 
